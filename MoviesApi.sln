@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoviesApi", "MoviesApi\MoviesApi.csproj", "{9CA9D2B3-AB2F-4C72-AB7F-B3C43F321B75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoviesApiTest", "MoviesApiTest\MoviesApiTest.csproj", "{EA80B129-575A-4205-828D-0D2606B7981B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoviesApiTest", "MoviesApiTest\MoviesApiTest.csproj", "{EA80B129-575A-4205-828D-0D2606B7981B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoviesApi.Core", "MoviesApi.Core\MoviesApi.Core.csproj", "{9464BEA0-174B-4D00-8E30-B79DA416A1AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{EA80B129-575A-4205-828D-0D2606B7981B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA80B129-575A-4205-828D-0D2606B7981B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA80B129-575A-4205-828D-0D2606B7981B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9464BEA0-174B-4D00-8E30-B79DA416A1AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9464BEA0-174B-4D00-8E30-B79DA416A1AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9464BEA0-174B-4D00-8E30-B79DA416A1AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9464BEA0-174B-4D00-8E30-B79DA416A1AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
