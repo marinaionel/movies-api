@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MoviesApi.Core
+namespace movies_api.Core
 {
     public class Class1
     {

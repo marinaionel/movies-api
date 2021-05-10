@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace MoviesApi.Core.Test
+namespace movies_api.Core.Test
 {
     public class Tests
     {

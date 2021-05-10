@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>movies_api</RootNamespace>
+    <RootNamespace>MoviesApi</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,6 +1,6 @@
-﻿using MoviesApi.Core.Logging;
+﻿using movies_api.Core.Logging;
 
-namespace MoviesApi.Common
+namespace movies_api.Common
 {
     internal class Log : LogBase<Log>
     {

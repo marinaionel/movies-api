@@ -3,7 +3,7 @@ using log4net.Core;
 using System;
 using System.Reflection;
 
-namespace MoviesApi.Core.Logging
+namespace movies_api.Core.Logging
 {
     public abstract class LogBase<T> where T : LogBase<T>, new()
     {
