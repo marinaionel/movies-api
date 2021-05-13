@@ -5,11 +5,10 @@ using System.Collections.Generic;
 
 namespace MoviesApi.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class SearchController : ControllerBase
     {
-        [HttpGet]
+        [HttpGet("s")]
         public List<ISearchable> Search(string q, Type type)
         {
             return null;
