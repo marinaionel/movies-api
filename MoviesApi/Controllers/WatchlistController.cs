@@ -6,11 +6,12 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class WatchlistController : ControllerBase
     {
+        [HttpPost("AddToWatchList")]
         public void AddToWatchList(string movieId)
         {
 
         }
-
+        [HttpPost("RemoveFromWatchList")]
         public void RemoveFromWatchList(string movieId)
         {
 

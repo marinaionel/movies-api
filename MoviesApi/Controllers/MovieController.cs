@@ -14,13 +14,13 @@ namespace MoviesApi.Controllers
             return new Movie { Id = id, SearchString = id + "" };
         }
 
-        [HttpGet]
+        [HttpGet("GetMovies")]
         public IEnumerable<Movie> GetMovies(int max, int offset)
         {
             return null;
         }
 
-        [HttpGet]
+        [HttpGet("GetReviews")]
         public IEnumerable<Review> GetReviews(string movieId, int max, int offset)
         {
             return null;

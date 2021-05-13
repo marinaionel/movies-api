@@ -9,13 +9,13 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class CrewController : ControllerBase
     {
-        [HttpGet]
+        [HttpGet("GetCrewMember")]
         public CrewMember GetCrewMember(string id)
         {
             return null;
         }
 
-        [HttpGet]
+        [HttpGet("GetCrewMembers")]
         public List<CrewMember> GetCrewMembers(int max, int offset, CrewMemberType type)
         {
             return null;

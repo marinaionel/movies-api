@@ -7,7 +7,7 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class SearchController : ControllerBase
     {
-        [HttpGet("s")]
+        [HttpGet("search")]
         public List<ISearchable> Search(string q, Core.Enums.Type type)
         {
             return null;

@@ -6,11 +6,13 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class FavouriteActorsListController : ControllerBase
     {
+        [HttpPost("AddToFavouriteList")]
         public void AddToFavouriteList(string actorId)
         {
 
         }
 
+        [HttpPost("RemoveFromFavouriteList")]
         public void RemoveFromFavouriteList(string actorId)
         {
 

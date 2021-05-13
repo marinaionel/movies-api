@@ -8,11 +8,13 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class ChartController : ControllerBase
     {
+        [HttpGet("GetCharts")]
         public List<Chart> GetCharts(int max, int offset, string reference)
         {
             return null;
         }
 
+        [HttpGet("GetChart")]
         public List<Chart> GetChart(string routeString)
         {
             return null;
