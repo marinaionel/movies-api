@@ -8,10 +8,10 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
-        [HttpGet]
+        [HttpGet("getMovie/{id}")]
         public Movie GetMovie(string id)
         {
-            return null;
+            return new Movie { Id = id, SearchString = id + "" };
         }
 
         [HttpGet]
