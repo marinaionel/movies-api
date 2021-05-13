@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  build-and-deploy:
 
     runs-on: ubuntu-latest
 
@@ -23,3 +23,14 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Release build  
+      run: dotnet build --configuration Release  
+    - name: Publish  
+      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/movies-api  
+    - name: Deploy to Azure Web App  
+      uses: azure/webapps-deploy@v1  
+      with:  
+        app-name: 'movies-client'  
+        slot-name: 'production'  
+        publish-profile: ${{ secrets.AZURE_CREDENTIALS }}  
+        package: ${{env.DOTNET_ROOT}}/movies-api   
