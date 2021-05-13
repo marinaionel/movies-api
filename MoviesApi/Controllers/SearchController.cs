@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MoviesApi.Core.Interfaces;
-using System;
 using System.Collections.Generic;
 
 namespace MoviesApi.Controllers
@@ -9,7 +8,7 @@ namespace MoviesApi.Controllers
     public class SearchController : ControllerBase
     {
         [HttpGet("s")]
-        public List<ISearchable> Search(string q, Type type)
+        public List<ISearchable> Search(string q, Core.Enums.Type type)
         {
             return null;
         }
