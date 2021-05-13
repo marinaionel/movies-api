@@ -26,7 +26,7 @@ jobs:
     - name: Deploy to Azure Web App  
       uses: azure/webapps-deploy@v1  
       with:  
-        app-name: 'movies-api'  
+        app-name: 'movies-client'  
         slot-name: 'production'  
         publish-profile: ${{ secrets.AZURE_CREDENTIALS }}  
-        package: ${{env.DOTNET_ROOT}}/movies-api   
+        package: ${{env.DOTNET_ROOT}}/movies-client   
