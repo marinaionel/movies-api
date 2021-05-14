@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
-namespace MoviesApi.Common.Model.ReverseEngineering
+namespace MoviesApi.Core.Model.ReverseEngineering
 {
     [Keyless]
     [Table("movies", Schema = "moviesfile")]

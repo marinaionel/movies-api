@@ -39,7 +39,7 @@ namespace MoviesApi
                 opt.SerializerSettings.Formatting = Formatting.None;
             });
 
-            services.AddDbContext<DbContextClass>(op => op.UseSqlServer(Configuration.GetConnectionString("Sep6Database")));
+            services.AddDbContext<MoviesContext>(op => op.UseSqlServer(Configuration.GetConnectionString("Sep6Database")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

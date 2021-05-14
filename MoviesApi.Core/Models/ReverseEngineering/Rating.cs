@@ -4,15 +4,17 @@ using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
-namespace MoviesApi.Common.Model.ReverseEngineering
+namespace MoviesApi.Core.Model.ReverseEngineering
 {
     [Keyless]
-    [Table("stars", Schema = "moviesfile")]
-    public partial class Star
+    [Table("ratings", Schema = "moviesfile")]
+    public partial class Rating
     {
         [Column("movie_id")]
         public int? MovieId { get; set; }
-        [Column("person_id")]
-        public int? PersonId { get; set; }
+        [Column("rating")]
+        public float? Rating1 { get; set; }
+        [Column("votes")]
+        public int? Votes { get; set; }
     }
 }
