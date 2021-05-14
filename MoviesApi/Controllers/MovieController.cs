@@ -11,7 +11,7 @@ namespace MoviesApi.Controllers
         [HttpGet("getMovie/{id}")]
         public Movie GetMovie(string id)
         {
-            return new Movie { Id = id, SearchString = id + "" };
+            return new Movie { Id = id, SearchString = id + "aaaaaaaaa" };
         }
 
         [HttpGet("GetMovies")]
