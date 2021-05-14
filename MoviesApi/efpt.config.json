@@ -9,7 +9,7 @@
    "OutputContextPath": null,
    "OutputPath": null,
    "ProceduresReturnList": false,
-   "ProjectRootNamespace": "MoviesApi.ReverseEngineer.Models",
+   "ProjectRootNamespace": "MoviesApi.Core.Model.ReverseEngineering",
    "Schemas": null,
    "SelectedHandlebarsLanguage": 0,
    "SelectedToBeGenerated": 0,
