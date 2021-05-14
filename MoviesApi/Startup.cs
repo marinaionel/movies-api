@@ -39,6 +39,7 @@ namespace MoviesApi
             });
 
             services.AddDbContext<MoviesContext>(op => op.UseSqlServer(Configuration.GetConnectionString("Sep6Database")));
+            services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
