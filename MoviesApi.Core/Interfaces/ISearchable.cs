@@ -2,6 +2,6 @@
 {
     public interface ISearchable
     {
-        public string SearchString { get; set; }
+        public string SearchString { get; }
     }
 }
