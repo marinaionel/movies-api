@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using MoviesApi;
 
-namespace movies_api
+namespace MoviesApi
 {
     public class Program
     {

@@ -1,0 +1,52 @@
+﻿{
+   "CodeGenerationMode": 2,
+   "ContextClassName": "MoviesContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": true,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": null,
+   "ProceduresReturnList": false,
+   "ProjectRootNamespace": "MoviesApi.ReverseEngineer.Models",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "Name": "[moviesfile].[directors]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[moviesfile].[movies]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[moviesfile].[people]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[moviesfile].[ratings]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[moviesfile].[stars]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": "movies-sep6.movies",
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": false,
+   "UseHandleBars": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseNoConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSpatial": false
+}
