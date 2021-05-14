@@ -23,7 +23,7 @@ namespace MoviesApi.Controllers
         [HttpGet("GetReviews")]
         public IEnumerable<Review> GetReviews(string movieId, int max, int offset)
         {
-            return null;
+            return new List<Review>();
         }
     }
 }
