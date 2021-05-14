@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MoviesApi.Core.Model;
 using MoviesApi.Core.Models;
+using MoviesApi.Data;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MoviesApi.Controllers
 {
@@ -9,15 +13,17 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
-        public MovieController()
+        private MoviesContext _moviesContext;
+        public MovieController(MoviesContext moviesContext)
         {
-
+            _moviesContext = moviesContext;
         }
 
         [HttpGet("getMovie/{id}")]
-        public Movie GetMovie(string id)
+        public async Task<ActionResult<Movie>> GetMovieAsync(string id)
         {
-            return new Movie { Id = id, SearchString = id };
+            Movie m = await _moviesContext.Movies.Where(m => m.Id == id).FirstOrDefaultAsync();
+            return m == null ? NotFound() : m;
         }
 
         [HttpGet("GetMovies")]

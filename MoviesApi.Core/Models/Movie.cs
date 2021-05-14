@@ -12,9 +12,9 @@ namespace MoviesApi.Core.Model
     public partial class Movie :ISearchable
     {
         [Column("id")]
-        private int id { get; set; }
+        private int _id { get; set; }
         [NotMapped]
-        public string Id { get => "tt" + id; set { id = int.Parse(value); } }
+        public string Id { get => "tt" + _id; set { _id = int.Parse(value); } }
         [Column("title", TypeName = "text")]
         public string Title { get; set; }
         [Column("year")]
