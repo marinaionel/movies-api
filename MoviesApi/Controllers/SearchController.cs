@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace MoviesApi.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
     public class SearchController : ControllerBase
     {
