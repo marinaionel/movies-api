@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MoviesApi.Core.Model;
 using MoviesApi.Core.Models;
 using System.Collections.Generic;
 
@@ -8,6 +9,11 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
+        public MovieController()
+        {
+
+        }
+
         [HttpGet("getMovie/{id}")]
         public Movie GetMovie(string id)
         {
