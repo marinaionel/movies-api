@@ -6,6 +6,10 @@
     "mssql1": {
       "type": "mssql",
       "connectionId": "Sep6Database"
+    },
+    "appInsights1": {
+      "type": "appInsights",
+      "connectionId": "APPINSIGHTS_CONNECTIONSTRING"
     }
   }
 }
