@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MoviesApi.Data;
 using Newtonsoft.Json;
+using System;
 
 namespace MoviesApi
 {
@@ -37,7 +38,17 @@ namespace MoviesApi
                 opt.SerializerSettings.Formatting = Formatting.None;
             });
 
-            services.AddDbContext<MoviesContext>(op => op.UseSqlServer(Configuration.GetConnectionString("Sep6Database")));
+            services.AddDbContext<MoviesContext>(op =>
+            {
+                op.UseSqlServer(Configuration.GetConnectionString("Sep6Database"),
+                sqlOptions =>
+                {
+                    sqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 10,
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    errorNumbersToAdd: null);
+                });
+            });
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
         }
 

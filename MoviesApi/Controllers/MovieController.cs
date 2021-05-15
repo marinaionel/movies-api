@@ -22,7 +22,11 @@ namespace MoviesApi.Controllers
         [HttpGet("getMovie/{id}")]
         public async Task<ActionResult<Movie>> GetMovieAsync(string id)
         {
-            Movie m = await _moviesContext.Movies.Where(m => m.IdString == id).FirstOrDefaultAsync();
+            id = id.Replace("tt", "");
+            if (!int.TryParse(id, out int idAsString))
+                return BadRequest();
+
+            Movie m = await _moviesContext.Movies.Where(m => m.Id == idAsString).FirstOrDefaultAsync();
             return m == null ? NotFound() : m;
         }
 
