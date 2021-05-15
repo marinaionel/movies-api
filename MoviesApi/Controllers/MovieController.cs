@@ -26,7 +26,7 @@ namespace MoviesApi.Controllers
             if (!int.TryParse(id, out int idAsString))
                 return BadRequest();
 
-            Movie m = await _moviesContext.Movies.Where(m => m.Id == idAsString).FirstOrDefaultAsync();
+            Movie m = await _moviesContext.Movies.Where(m => m.Id == idAsString).Include(m => m.Directors).Include(m => m.Stars).FirstOrDefaultAsync();
             return m == null ? NotFound() : m;
         }
 
