@@ -25,5 +25,9 @@ namespace MoviesApi.Core.Model
         public string IdString { get => "tt" + Id; }
         [NotMapped]
         public string SearchString { get => string.Join(',', Title); }
+        public string PosterUrl { get; set; }
+        public Person Director { get; set; }
+        public Person Writer { get; set; }
+        public List<Person> Actors { get; set; }
     }
 }
