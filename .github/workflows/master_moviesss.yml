@@ -15,7 +15,9 @@ jobs:
     steps:
     # checkout the repo
     - name: 'Checkout Github Action'
-      uses: actions/checkout@master
+      uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.PAT }}
 
 
     - name: Set up .NET Core
