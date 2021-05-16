@@ -29,7 +29,7 @@
         "AZURE_USERNAME": "279978@VIAUC.DK"
       },
       "dotnetRunMessages": "true",
-      "applicationUrl": "https://movies-client.azurewebsites.net;http://movies-client.azurewebsites.net"
+      "applicationUrl": "https://moviesss.azurewebsites.net;http://moviesss.azurewebsites.net"
     }
   }
 }
