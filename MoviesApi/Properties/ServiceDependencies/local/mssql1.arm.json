@@ -57,12 +57,11 @@
             },
             {
               "sku": {
-                "name": "GP_S_Gen5",
-                "tier": "GeneralPurpose",
-                "family": "Gen5",
-                "capacity": 1
+                "name": "Basic",
+                "tier": "Basic",
+                "capacity": 5
               },
-              "kind": "v12.0,user,vcore,serverless",
+              "kind": "v12.0,user",
               "location": "[parameters('resourceLocation')]",
               "name": "movies-sep6/movies",
               "type": "Microsoft.Sql/servers/databases",

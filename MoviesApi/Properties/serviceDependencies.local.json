@@ -3,12 +3,6 @@
     "secrets1": {
       "type": "secrets.user"
     },
-    "mssql1": {
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/movies-sep6/databases/movies",
-      "type": "mssql.azure",
-      "connectionId": "Sep6Database",
-      "secretStore": "LocalSecretsFile"
-    },
     "appInsights1": {
       "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/microsoft.insights/components/moviesss",
       "type": "appInsights.azure",
@@ -20,6 +14,12 @@
       "type": "secrets.keyVault",
       "connectionId": "VaultUri",
       "secretStore": null
+    },
+    "mssql1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/movies-sep6/databases/movies",
+      "type": "mssql.azure",
+      "connectionId": "Sep6Database",
+      "secretStore": "AzureKeyVault"
     }
   }
 }
