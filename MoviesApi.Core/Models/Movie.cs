@@ -29,5 +29,8 @@ namespace MoviesApi.Core.Model
         public Person Director { get; set; }
         public Person Writer { get; set; }
         public List<Person> Actors { get; set; }
+        public List<string> Genre { get; set; }
+        public string Runtime { get; set; }
+        public string Plot { get; set; }
     }
 }
