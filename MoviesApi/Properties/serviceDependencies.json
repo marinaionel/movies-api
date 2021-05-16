@@ -11,6 +11,10 @@
     "secrets1": {
       "type": "secrets",
       "connectionId": "VaultUri"
+    },
+    "secrets2": {
+      "type": "secrets",
+      "connectionId": "VaultUri"
     }
   }
 }

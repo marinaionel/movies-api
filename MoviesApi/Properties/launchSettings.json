@@ -14,7 +14,9 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "VaultUri": "https://moviesapivault1.vault.azure.net/",
+        "AZURE_USERNAME": "279978@VIAUC.DK"
       }
     },
     "movies_api": {
@@ -22,7 +24,9 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Deploy"
+        "ASPNETCORE_ENVIRONMENT": "Deploy",
+        "VaultUri": "https://moviesapivault1.vault.azure.net/",
+        "AZURE_USERNAME": "279978@VIAUC.DK"
       },
       "dotnetRunMessages": "true",
       "applicationUrl": "https://movies-client.azurewebsites.net;http://movies-client.azurewebsites.net"
