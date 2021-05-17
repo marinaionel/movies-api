@@ -26,14 +26,22 @@ namespace MoviesApi.Controllers
             if (!int.TryParse(id, out int idAsString))
                 return BadRequest();
 
-            Movie m = await _moviesContext.Movies.Where(m => m.Id == idAsString).Include(m => m.Directors).Include(m => m.Stars).FirstOrDefaultAsync();
+            Movie m = await _moviesContext.Movies.Where(m => m.Id == idAsString)
+                                                 .Include(m => m.Directors)
+                                                 .Include(m => m.Stars)
+                                                 .FirstOrDefaultAsync();
             return m == null ? NotFound() : m;
         }
 
         [HttpGet("GetMovies")]
-        public IEnumerable<Movie> GetMovies(int max, int offset)
+        public async Task<IEnumerable<Movie>> GetMoviesAsync(int max, int offset)
         {
-            return null;
+            IEnumerable<Movie> m = await _moviesContext.Movies.Skip(offset)
+                                                              .Take(max)
+                                                              .Include(m => m.Directors)
+                                                              .Include(m => m.Stars)
+                                                              .ToListAsync();
+            return m;
         }
 
         [HttpGet("GetReviews")]
