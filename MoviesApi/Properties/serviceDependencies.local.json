@@ -11,9 +11,6 @@
       "type": "mssql.azure",
       "connectionId": "Sep6Database",
       "secretStore": "LocalSecretsFile"
-    },
-    "secrets1": {
-      "type": "secrets.user"
     }
   }
 }
