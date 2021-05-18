@@ -9,15 +9,17 @@ namespace MoviesApi.Core.Model
     {
         public Person()
         {
-            Directors = new HashSet<Director>();
+            DirectedMovies = new HashSet<Movie>();
+            ActedInMovies = new HashSet<Movie>();
+            Jobs = new HashSet<CrewMemberType>();
         }
 
         public int Id { get; set; }
         public string Name { get; set; }
         public long? Birth { get; set; }
         public string Description { get; set; }
-        public List<CrewMemberType> Job { get; set; }
-
-        public virtual ICollection<Director> Directors { get; set; }
+        public ICollection<CrewMemberType> Jobs { get; set; }
+        public ICollection<Movie> DirectedMovies { get; set; }
+        public ICollection<Movie> ActedInMovies { get; set; }
     }
 }

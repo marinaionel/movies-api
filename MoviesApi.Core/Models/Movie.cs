@@ -11,25 +11,22 @@ namespace MoviesApi.Core.Model
     {
         public Movie()
         {
-            Directors = new HashSet<Director>();
-            Stars = new HashSet<Star>();
+            Actors = new HashSet<Person>();
+            Genre = new HashSet<string>();
+            Directors = new HashSet<Person>();
         }
         [JsonIgnore]
         public int Id { get; set; }
         public string Title { get; set; }
         public long? Year { get; set; }
-
-        public virtual ICollection<Director> Directors { get; set; }
-        public virtual ICollection<Star> Stars { get; set; }
         [NotMapped]
         public string IdString { get => "tt" + Id; }
         [NotMapped]
         public string SearchString { get => string.Join(',', Title); }
         public string PosterUrl { get; set; }
-        public Person Director { get; set; }
-        public Person Writer { get; set; }
-        public List<Person> Actors { get; set; }
-        public List<string> Genre { get; set; }
+        public ICollection<Person> Actors { get; set; }
+        public ICollection<string> Genre { get; set; }
+        public ICollection<Person> Directors { get; set; }
         public string Runtime { get; set; }
         public string Plot { get; set; }
     }

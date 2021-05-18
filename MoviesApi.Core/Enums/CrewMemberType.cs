@@ -4,6 +4,5 @@
     {
         Actor,
         Director,
-        Writer
     }
 }

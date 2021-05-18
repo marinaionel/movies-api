@@ -28,7 +28,7 @@ namespace MoviesApi.Controllers
 
             Movie m = await _moviesContext.Movies.Where(m => m.Id == idAsString)
                                                  .Include(m => m.Directors)
-                                                 .Include(m => m.Stars)
+                                                 .Include(m => m.Actors)
                                                  .FirstOrDefaultAsync();
             return m == null ? NotFound() : m;
         }
@@ -39,7 +39,7 @@ namespace MoviesApi.Controllers
             IEnumerable<Movie> m = await _moviesContext.Movies.Skip(offset)
                                                               .Take(max)
                                                               .Include(m => m.Directors)
-                                                              .Include(m => m.Stars)
+                                                              .Include(m => m.Actors)
                                                               .ToListAsync();
             return m;
         }
