@@ -14,7 +14,9 @@ namespace MoviesApi.Core.Models
             Actors = new HashSet<Person>();
             Genres = new HashSet<Genre>();
             Directors = new HashSet<Person>();
+            Charts = new HashSet<Chart>();
         }
+
         [JsonIgnore]
         public int Id { get; set; }
         public string Title { get; set; }
@@ -27,6 +29,8 @@ namespace MoviesApi.Core.Models
         public ICollection<Person> Actors { get; set; }
         public ICollection<Genre> Genres { get; set; }
         public ICollection<Person> Directors { get; set; }
+        [JsonIgnore]
+        public ICollection<Chart> Charts { get; set; }
         public string Runtime { get; set; }
         public string Plot { get; set; }
     }

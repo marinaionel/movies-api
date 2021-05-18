@@ -10,6 +10,8 @@ namespace MoviesApi.Data
 {
     public class MoviesContext : DbContext
     {
+        private const string Schema = "moviesfile";
+
         public MoviesContext()
         {
         }
@@ -18,10 +20,11 @@ namespace MoviesApi.Data
         {
         }
 
-        public virtual DbSet<Movie> Movies { get; set; }
-        public virtual DbSet<Person> People { get; set; }
-        public virtual DbSet<Rating> Ratings { get; set; }
-        public virtual DbSet<Genre> Genres { get; set; }
+        public DbSet<Movie> Movies { get; set; }
+        public DbSet<Person> People { get; set; }
+        public DbSet<Rating> Ratings { get; set; }
+        public DbSet<Genre> Genres { get; set; }
+        public DbSet<Chart> Charts { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -30,7 +33,7 @@ namespace MoviesApi.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
-            modelBuilder.HasDefaultSchema("moviesfile");
+            modelBuilder.HasDefaultSchema(Schema);
 
             modelBuilder.Entity<Genre>(entity =>
             {
@@ -41,7 +44,7 @@ namespace MoviesApi.Data
                       .ValueGeneratedOnAdd()
                       .HasColumnName("id");
 
-                entity.ToTable("genres", "moviesfile");
+                entity.ToTable("genres", Schema);
             });
 
             modelBuilder.Entity<Person>(entity =>
@@ -50,7 +53,7 @@ namespace MoviesApi.Data
                       .HasName("people_pk")
                       .IsClustered(false);
 
-                entity.ToTable("people", "moviesfile");
+                entity.ToTable("people", Schema);
 
                 entity.HasIndex(e => e.Id, "people_id_uindex")
                       .IsUnique();
@@ -99,7 +102,7 @@ namespace MoviesApi.Data
                       .HasColumnType("text")
                       .HasColumnName("plot");
 
-                entity.ToTable("movies", "moviesfile");
+                entity.ToTable("movies", Schema);
 
                 entity.HasIndex(e => e.Id, "movies_id_uindex")
                       .IsUnique();
@@ -158,7 +161,7 @@ namespace MoviesApi.Data
             {
                 entity.HasNoKey();
 
-                entity.ToTable("ratings", "moviesfile");
+                entity.ToTable("ratings", Schema);
 
                 entity.Property(e => e.MovieId)
                       .HasColumnName("movie_id");
@@ -173,6 +176,42 @@ namespace MoviesApi.Data
                       .WithMany()
                       .HasForeignKey(d => d.MovieId)
                       .HasConstraintName("ratings_movies_id_fk");
+            });
+
+            modelBuilder.Entity<Chart>(entity =>
+            {
+                entity.ToTable("charts", Schema);
+                entity.HasIndex(e => e.Id);
+
+                entity.Property(e => e.Id)
+                      .HasColumnName("id")
+                      .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Route)
+                      .HasColumnName("route")
+                      .HasColumnType("nvarchar(50)");
+
+                entity.Property(e => e.Name)
+                      .HasColumnName("name")
+                      .HasColumnType("nvarchar(50)");
+
+                entity.HasMany(e => e.Movies)
+                      .WithMany(m => m.Charts)
+                      .UsingEntity<Dictionary<string, object>>(
+                        "charts_movie",
+                        a => a
+                            .HasOne<Movie>()
+                            .WithMany()
+                            .HasForeignKey("movie_id")
+                            .HasConstraintName("charts_movie_movies_id_fk")
+                            .OnDelete(DeleteBehavior.Cascade),
+                        m => m
+                            .HasOne<Chart>()
+                            .WithMany()
+                            .HasForeignKey("chart_id")
+                            .HasConstraintName("charts_movie_charts_id_fk")
+                            .OnDelete(DeleteBehavior.ClientCascade)
+                        );
             });
         }
     }
