@@ -1,6 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using MoviesApi.Core.Enums;
 using MoviesApi.Core.Models;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MoviesApi.Data
 {
@@ -34,7 +38,10 @@ namespace MoviesApi.Data
                       .IsUnique();
 
                 entity.Property(g => g.Id)
-                      .ValueGeneratedOnAdd();
+                      .ValueGeneratedOnAdd()
+                      .HasColumnName("id");
+
+                entity.ToTable("genres", "moviesfile");
             });
 
             modelBuilder.Entity<Person>(entity =>
@@ -52,12 +59,26 @@ namespace MoviesApi.Data
                       .ValueGeneratedNever()
                       .HasColumnName("id");
 
+                entity.Property(m => m.Description)
+                      .HasColumnName("description");
+
                 entity.Property(e => e.Birth)
                       .HasColumnName("birth");
 
                 entity.Property(e => e.Name)
                       .HasColumnType("text")
                       .HasColumnName("name");
+
+                ValueComparer<ICollection<CrewMemberType>> valueComparer = new(
+                                                                    (c1, c2) => c1.SequenceEqual(c2),
+                                                                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                                                                    c => c.ToHashSet());
+
+                entity.Property(p => p.Jobs).HasColumnName("jobs")
+                                            .HasConversion(obj => string.Join(',', obj.Select(e => Enum.GetName(e.GetType(), e))),
+                                                           obj => obj.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(o => (CrewMemberType)Enum.Parse(typeof(CrewMemberType), o)).ToHashSet() ?? new HashSet<CrewMemberType>())
+                                            .Metadata
+                                            .SetValueComparer(valueComparer);
             });
 
             modelBuilder.Entity<Movie>(entity =>
@@ -65,6 +86,18 @@ namespace MoviesApi.Data
                 entity.HasKey(e => e.Id)
                       .HasName("movies_pk")
                       .IsClustered(false);
+
+                entity.Property(m => m.PosterUrl)
+                      .HasColumnType("text")
+                      .HasColumnName("poster_url");
+
+                entity.Property(m => m.Runtime)
+                      .HasColumnType("nvarchar(15)")
+                      .HasColumnName("runtime");
+
+                entity.Property(m => m.Plot)
+                      .HasColumnType("text")
+                      .HasColumnName("plot");
 
                 entity.ToTable("movies", "moviesfile");
 
