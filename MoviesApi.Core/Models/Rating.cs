@@ -1,6 +1,6 @@
 ﻿#nullable disable
 
-namespace MoviesApi.Core.Model
+namespace MoviesApi.Core.Models
 {
     public class Rating
     {

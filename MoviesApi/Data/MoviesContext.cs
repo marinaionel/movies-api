@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MoviesApi.Core.Model;
+using MoviesApi.Core.Models;
 using System.Collections.Generic;
 
 namespace MoviesApi.Data
@@ -17,6 +17,7 @@ namespace MoviesApi.Data
         public virtual DbSet<Movie> Movies { get; set; }
         public virtual DbSet<Person> People { get; set; }
         public virtual DbSet<Rating> Ratings { get; set; }
+        public virtual DbSet<Genre> Genres { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -26,6 +27,15 @@ namespace MoviesApi.Data
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
             modelBuilder.HasDefaultSchema("moviesfile");
+
+            modelBuilder.Entity<Genre>(entity =>
+            {
+                entity.HasIndex(g => g.Id)
+                      .IsUnique();
+
+                entity.Property(g => g.Id)
+                      .ValueGeneratedOnAdd();
+            });
 
             modelBuilder.Entity<Person>(entity =>
             {
@@ -105,6 +115,10 @@ namespace MoviesApi.Data
                             .HasForeignKey("movie_id")
                             .HasConstraintName("directors_movies_id_fk")
                             .OnDelete(DeleteBehavior.ClientCascade));
+
+                entity.HasMany(m => m.Genres)
+                      .WithMany(g => g.Movies)
+                      .UsingEntity(t => t.ToTable("genre_movie"));
             });
 
             modelBuilder.Entity<Rating>(entity =>

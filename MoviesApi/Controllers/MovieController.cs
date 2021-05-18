@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MoviesApi.Core.Model;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
 using System.Collections.Generic;

@@ -5,14 +5,14 @@ using System.Text.Json.Serialization;
 
 #nullable disable
 
-namespace MoviesApi.Core.Model
+namespace MoviesApi.Core.Models
 {
     public class Movie : ISearchable
     {
         public Movie()
         {
             Actors = new HashSet<Person>();
-            Genre = new HashSet<string>();
+            Genres = new HashSet<Genre>();
             Directors = new HashSet<Person>();
         }
         [JsonIgnore]
@@ -25,7 +25,7 @@ namespace MoviesApi.Core.Model
         public string SearchString { get => string.Join(',', Title); }
         public string PosterUrl { get; set; }
         public ICollection<Person> Actors { get; set; }
-        public ICollection<string> Genre { get; set; }
+        public ICollection<Genre> Genres { get; set; }
         public ICollection<Person> Directors { get; set; }
         public string Runtime { get; set; }
         public string Plot { get; set; }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace MoviesApi.Core.Model
+namespace MoviesApi.Core.Models
 {
     public class Person
     {
