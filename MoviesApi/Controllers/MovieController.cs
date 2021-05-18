@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using movies_api.Common;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,29 +21,49 @@ namespace MoviesApi.Controllers
             _moviesContext = moviesContext;
         }
 
-        [HttpGet("getMovie/{id}")]
+        [HttpGet("GetMovie/{id}")]
         public async Task<ActionResult<Movie>> GetMovieAsync(string id)
         {
-            id = id.Replace("tt", "");
-            if (!int.TryParse(id, out int idAsString))
-                return BadRequest();
+            try
+            {
+                id = id.Replace("tt", "");
+                if (!int.TryParse(id, out int idAsInt))
+                    return BadRequest();
 
-            Movie m = await _moviesContext.Movies.Where(m => m.Id == idAsString)
-                                                 .Include(m => m.Directors)
-                                                 .Include(m => m.Actors)
-                                                 .FirstOrDefaultAsync();
-            return m == null ? NotFound() : m;
+                Movie m = await _moviesContext.Movies.Where(m => m.Id == idAsInt)
+                                                           .Include(m => m.Directors)
+                                                           .Include(m => m.Actors)
+                                                           .Include(m => m.Genres)
+                                                           .AsNoTracking()
+                                                           .FirstOrDefaultAsync();
+
+                return m == null ? NotFound() : m;
+            }
+            catch (Exception ex)
+            {
+                Log.Default.Error($"Error getting movie {id}", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpGet("GetMovies")]
-        public async Task<IEnumerable<Movie>> GetMoviesAsync(int max, int offset)
+        public async Task<ActionResult<List<Movie>>> GetMoviesAsync(int max, int offset)
         {
-            IEnumerable<Movie> m = await _moviesContext.Movies.Skip(offset)
-                                                              .Take(max)
-                                                              .Include(m => m.Directors)
-                                                              .Include(m => m.Actors)
-                                                              .ToListAsync();
-            return m;
+            try
+            {
+                List<Movie> m = await _moviesContext.Movies.Include(m => m.Directors)
+                                                           .Include(m => m.Actors)
+                                                           .Skip(offset)
+                                                           .Take(max)
+                                                           .AsNoTracking()
+                                                           .ToListAsync();
+                return m;
+            }
+            catch (Exception ex)
+            {
+                Log.Default.Error($"Error getting movies", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpGet("GetReviews")]
