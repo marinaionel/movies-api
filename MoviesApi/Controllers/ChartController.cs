@@ -1,6 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MoviesApi.Common;
 using MoviesApi.Core.Models;
+using MoviesApi.Data;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MoviesApi.Controllers
 {
@@ -8,16 +15,56 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class ChartController : ControllerBase
     {
-        [HttpGet("GetCharts")]
-        public List<Chart> GetCharts(int max, int offset, string reference)
+        private MoviesContext _moviesContext;
+        public ChartController(MoviesContext moviesContext)
         {
-            return null;
+            _moviesContext = moviesContext;
         }
 
-        [HttpGet("GetChart")]
-        public List<Chart> GetChart(string routeString)
+        [HttpGet("all")]
+        public async Task<ActionResult<List<Chart>>> GetChartsAsync(int max, int offset)
         {
-            return null;
+            //TODO order by popularity
+            try
+            {
+                return await _moviesContext.Charts
+                                           .Include(c => c.Movies)
+                                           .ThenInclude(c => c.Genres)
+                                           .Include(c => c.Movies)
+                                           .ThenInclude(c => c.Directors)
+                                           .Skip(offset)
+                                           .Take(max)
+                                           .AsNoTracking()
+                                           .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Default.Error($"Error getting charts", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpGet("{r}")]
+        public async Task<ActionResult<Chart>> GetChart(string r)
+        {
+            try
+            {
+                Chart chart = await _moviesContext.Charts
+                                                   .Where(c => c.Route == r)
+                                                   .Include(c => c.Movies)
+                                                   .ThenInclude(c => c.Genres)
+                                                   .Include(c => c.Movies)
+                                                   .ThenInclude(c => c.Directors)
+                                                   .AsNoTracking()
+                                                   .FirstOrDefaultAsync();
+
+                return chart == null ? NotFound() : chart;
+            }
+            catch (Exception ex)
+            {
+                Log.Default.Error($"Error getting chart {r}", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
     }
 }

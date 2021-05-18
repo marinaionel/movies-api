@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using movies_api.Common;
+using MoviesApi.Common;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
 using System;
@@ -21,7 +21,7 @@ namespace MoviesApi.Controllers
             _moviesContext = moviesContext;
         }
 
-        [HttpGet("GetMovie/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<Movie>> GetMovieAsync(string id)
         {
             try
@@ -31,12 +31,11 @@ namespace MoviesApi.Controllers
                     return BadRequest();
 
                 Movie m = await _moviesContext.Movies.Where(m => m.Id == idAsInt)
-                                                           .Include(m => m.Directors)
-                                                           .Include(m => m.Actors)
-                                                           .Include(m => m.Genres)
-                                                           .AsNoTracking()
-                                                           .FirstOrDefaultAsync();
-
+                                                     .Include(m => m.Directors)
+                                                     .Include(m => m.Actors)
+                                                     .Include(m => m.Genres)
+                                                     .AsNoTracking()
+                                                     .FirstOrDefaultAsync();
                 return m == null ? NotFound() : m;
             }
             catch (Exception ex)
@@ -46,7 +45,7 @@ namespace MoviesApi.Controllers
             }
         }
 
-        [HttpGet("GetMovies")]
+        [HttpGet("all")]
         public async Task<ActionResult<List<Movie>>> GetMoviesAsync(int max, int offset)
         {
             try
@@ -66,7 +65,7 @@ namespace MoviesApi.Controllers
             }
         }
 
-        [HttpGet("GetReviews")]
+        [HttpGet("reviews")]
         public IEnumerable<Review> GetReviews(string movieId, int max, int offset)
         {
             return new List<Review>();
