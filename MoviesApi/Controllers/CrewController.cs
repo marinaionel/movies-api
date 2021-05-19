@@ -34,7 +34,6 @@ namespace MoviesApi.Controllers
                                            .Where(p => p.Id == idAsInt)
                                            .Include(p => p.ActedInMovies)
                                            .ThenInclude(m => m.Genres)
-                                           .Include(p => p.Jobs)
                                            .Include(p => p.DirectedMovies)
                                            .AsNoTracking()
                                            .FirstOrDefaultAsync();

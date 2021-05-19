@@ -26,6 +26,7 @@ namespace MoviesApi.Core.Models
         [NotMapped]
         public string SearchString { get => string.Join(',', Title); }
         public string PosterUrl { get; set; }
+        public string TrailerUrl { get; set; }
         public ICollection<Person> Actors { get; set; }
         public ICollection<Genre> Genres { get; set; }
         public ICollection<Person> Directors { get; set; }

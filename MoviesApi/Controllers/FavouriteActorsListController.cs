@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MoviesApi.Core.Models;
+using System.Collections.Generic;
 
 namespace MoviesApi.Controllers
 {
@@ -6,16 +8,22 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class FavouriteActorsListController : ControllerBase
     {
-        [HttpPost("AddToFavouriteList")]
-        public void AddToFavouriteList(string actorId)
+        [HttpGet]
+        public ActionResult<List<Person>> GetFavouriteActorsList()
         {
+            return null;
+        }
 
+        [HttpPost("AddToFavouriteList")]
+        public ActionResult AddToFavouriteList(string actorId)
+        {
+            return null;
         }
 
         [HttpPost("RemoveFromFavouriteList")]
-        public void RemoveFromFavouriteList(string actorId)
+        public ActionResult RemoveFromFavouriteList(string actorId)
         {
-
+            return null;
         }
     }
 }

@@ -94,6 +94,10 @@ namespace MoviesApi.Data
                       .HasColumnType("text")
                       .HasColumnName("poster_url");
 
+                entity.Property(m => m.TrailerUrl)
+                      .HasColumnType("text")
+                      .HasColumnName("trailer_url");
+
                 entity.Property(m => m.Runtime)
                       .HasColumnType("nvarchar(15)")
                       .HasColumnName("runtime");
