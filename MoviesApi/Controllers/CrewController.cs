@@ -55,7 +55,6 @@ namespace MoviesApi.Controllers
                     return await _moviesContext.People
                                                .Include(p => p.ActedInMovies)
                                                .ThenInclude(m => m.Genres)
-                                               .Include(p => p.Jobs)
                                                .Include(p => p.DirectedMovies)
                                                .AsNoTracking()
                                                .ToListAsync();
@@ -65,7 +64,6 @@ namespace MoviesApi.Controllers
                     return await _moviesContext.People
                                                .Include(p => p.ActedInMovies)
                                                .ThenInclude(m => m.Genres)
-                                               .Include(p => p.Jobs)
                                                .Include(p => p.DirectedMovies)
                                                .Where(p => p.Jobs.Contains((CrewMemberType)type))
                                                .AsNoTracking()
