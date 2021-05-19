@@ -27,7 +27,6 @@ namespace MoviesApi.Controllers
         {
             try
             {
-                id = id.Replace("nm", "");
                 if (!int.TryParse(id, out int idAsInt))
                     return BadRequest();
 
