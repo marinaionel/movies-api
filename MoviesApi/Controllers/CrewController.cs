@@ -42,7 +42,7 @@ namespace MoviesApi.Controllers
             }
             catch (Exception ex)
             {
-                Log.Default.Error($"Error crew member {id}", ex);
+                Log.Default.Error($"Error getting crew member {id}", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
@@ -55,28 +55,28 @@ namespace MoviesApi.Controllers
                 if (type == null)
                 {
                     return await _moviesContext.People
-                           .Include(p => p.ActedInMovies)
-                           .ThenInclude(m => m.Genres)
-                           .Include(p => p.Jobs)
-                           .Include(p => p.DirectedMovies)
-                           .AsNoTracking()
-                           .ToListAsync();
+                                               .Include(p => p.ActedInMovies)
+                                               .ThenInclude(m => m.Genres)
+                                               .Include(p => p.Jobs)
+                                               .Include(p => p.DirectedMovies)
+                                               .AsNoTracking()
+                                               .ToListAsync();
                 }
                 else
                 {
                     return await _moviesContext.People
-                           .Include(p => p.ActedInMovies)
-                           .ThenInclude(m => m.Genres)
-                           .Include(p => p.Jobs)
-                           .Include(p => p.DirectedMovies)
-                           .Where(p => p.Jobs.Contains((CrewMemberType)type))
-                           .AsNoTracking()
-                           .ToListAsync();
+                                               .Include(p => p.ActedInMovies)
+                                               .ThenInclude(m => m.Genres)
+                                               .Include(p => p.Jobs)
+                                               .Include(p => p.DirectedMovies)
+                                               .Where(p => p.Jobs.Contains((CrewMemberType)type))
+                                               .AsNoTracking()
+                                               .ToListAsync();
                 }
             }
             catch (Exception ex)
             {
-                Log.Default.Error($"Error crew members of type {type}", ex);
+                Log.Default.Error($"Error getting crew members of type {type}", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
