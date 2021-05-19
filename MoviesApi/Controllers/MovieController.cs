@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesApi.Common;
+using MoviesApi.Core.Helpers;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
 using System;
@@ -26,8 +27,7 @@ namespace MoviesApi.Controllers
         {
             try
             {
-                id = id.Replace("tt", "");
-                if (!int.TryParse(id, out int idAsInt))
+                if (!MovieHelper.ConvertIdToInt(id, out int idAsInt))
                     return BadRequest();
 
                 Movie m = await _moviesContext.Movies.Where(m => m.Id == idAsInt)

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MoviesApi.Data;
+using MoviesApi.OMDbClient;
 using Newtonsoft.Json;
 using System;
 
@@ -50,6 +51,8 @@ namespace MoviesApi
                 });
             });
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
+
+            services.AddSingleton<OMDBbServiceClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

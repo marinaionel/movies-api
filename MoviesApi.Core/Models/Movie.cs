@@ -1,4 +1,5 @@
-﻿using MoviesApi.Core.Interfaces;
+﻿using MoviesApi.Core.Helpers;
+using MoviesApi.Core.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
@@ -22,7 +23,7 @@ namespace MoviesApi.Core.Models
         public string Title { get; set; }
         public long? Year { get; set; }
         [NotMapped]
-        public string IdString { get => "tt" + Id; }
+        public string IdString { get => MovieHelper.ConvertIdToString(Id); }
         [NotMapped]
         public string SearchString { get => string.Join(',', Title); }
         public string PosterUrl { get; set; }
