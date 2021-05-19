@@ -67,6 +67,10 @@ namespace MoviesApi
                 app.UseHsts();
             }
 
+            app.UseCors(a => a.AllowAnyOrigin()
+                              .AllowAnyHeader()
+                              .AllowAnyMethod());
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
