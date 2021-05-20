@@ -43,7 +43,7 @@ namespace MoviesApi.Worker
 
                     if (!string.IsNullOrWhiteSpace(movieOmdb.Genre) && movieOmdb.Genre != "N/A")
                     {
-                        List<Genre> genresList = movieOmdb.Genre.Split(",", System.StringSplitOptions.RemoveEmptyEntries).Select(g => new Genre { Name = g }).ToList();
+                        List<Genre> genresList = movieOmdb.Genre.Split(",", StringSplitOptions.RemoveEmptyEntries).Select(g => new Genre { Name = g.Trim() }).ToList();
                         foreach (Genre genre in genresList)
                         {
                             Genre existingGenre = await _moviesContext.Genres.Where(g => g.Name.Trim().ToLower() == genre.Name.Trim().ToLower())
