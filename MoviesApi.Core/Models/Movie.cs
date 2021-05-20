@@ -25,6 +25,7 @@ namespace MoviesApi.Core.Models
         [NotMapped]
         public string IdString { get => MovieHelper.ConvertIdToString(Id); }
         [NotMapped]
+        [JsonIgnore]
         public string SearchString { get => string.Join(',', Title); }
         public string PosterUrl { get; set; }
         public string TrailerUrl { get; set; }

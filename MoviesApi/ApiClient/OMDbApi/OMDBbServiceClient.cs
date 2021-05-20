@@ -4,7 +4,7 @@ using MoviesApi.Core.Models.OMDb;
 using System;
 using System.Threading.Tasks;
 
-namespace MoviesApi.OMDbClient
+namespace MoviesApi.ApiClient.OMDbApi
 {
     public class OMDBbServiceClient
     {

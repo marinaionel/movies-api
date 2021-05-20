@@ -5,8 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MoviesApi.ApiClient.AzureFunctions;
+using MoviesApi.ApiClient.OMDbApi;
 using MoviesApi.Data;
-using MoviesApi.OMDbClient;
+using MoviesApi.Worker;
 using Newtonsoft.Json;
 using System;
 
@@ -53,6 +55,10 @@ namespace MoviesApi
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
 
             services.AddSingleton<OMDBbServiceClient>();
+            services.AddSingleton<GetTrailerClient>();
+
+            services.AddHostedService<DataFillingService>();
+            services.AddScoped<IScopedProcessingService, ScopedProcessingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,6 +81,8 @@ namespace MoviesApi
                               .AllowAnyMethod());
 
             app.UseHttpsRedirection();
+
+            app.UseDefaultFiles();
             app.UseStaticFiles();
 
             app.UseRouting();

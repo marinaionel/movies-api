@@ -24,7 +24,6 @@ namespace MoviesApi.Controllers
         [HttpGet("all")]
         public async Task<ActionResult<List<Chart>>> GetChartsAsync(int max, int offset)
         {
-            //TODO order by popularity
             try
             {
                 return await _moviesContext.Charts

@@ -10,6 +10,12 @@ namespace MoviesApi.Data
 {
     public class MoviesContext : DbContext
     {
+        public DbSet<Movie> Movies { get; set; }
+        public DbSet<Person> People { get; set; }
+        public DbSet<Rating> Ratings { get; set; }
+        public DbSet<Genre> Genres { get; set; }
+        public DbSet<Chart> Charts { get; set; }
+
         private const string Schema = "moviesfile";
 
         public MoviesContext()
@@ -19,12 +25,6 @@ namespace MoviesApi.Data
         public MoviesContext(DbContextOptions<MoviesContext> options) : base(options)
         {
         }
-
-        public DbSet<Movie> Movies { get; set; }
-        public DbSet<Person> People { get; set; }
-        public DbSet<Rating> Ratings { get; set; }
-        public DbSet<Genre> Genres { get; set; }
-        public DbSet<Chart> Charts { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
