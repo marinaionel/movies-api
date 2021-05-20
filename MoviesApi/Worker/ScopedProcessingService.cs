@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MoviesApi.ApiClient.AzureFunctions;
 using MoviesApi.ApiClient.OMDbApi;
+using MoviesApi.Common;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -25,44 +27,51 @@ namespace MoviesApi.Worker
 
         public async Task DoWork(CancellationToken stoppingToken)
         {
-            List<Movie> movies = await _moviesContext.Movies.AsTracking().ToListAsync();
-
-            foreach (Movie movie in movies)
+            try
             {
-                Core.Models.OMDb.Movie movieOmdb = await _oMDBbServiceClient.GetMovie(movie.IdString);
-                if (movieOmdb == null) continue;
+                List<Movie> movies = await _moviesContext.Movies.AsTracking().ToListAsync();
 
-                movie.Plot = movieOmdb.Plot;
-                movie.PosterUrl = movieOmdb.Poster == "N/A" ? null : movieOmdb.Poster;
-                movie.Runtime = movieOmdb.Runtime;
-                movie.TrailerYoutubeVideoId = await _getTrailerClient.GetTrailer($"{movie.Title} {movie.Year} trailer");
-
-                if (!string.IsNullOrWhiteSpace(movieOmdb.Genre))
+                foreach (Movie movie in movies)
                 {
-                    List<Genre> genresList = movieOmdb.Genre.Split(",", System.StringSplitOptions.RemoveEmptyEntries).Select(g => new Genre { Name = g }).ToList();
-                    foreach (Genre genre in genresList)
+                    Core.Models.OMDb.Movie movieOmdb = await _oMDBbServiceClient.GetMovie(movie.IdString);
+                    if (movieOmdb == null) continue;
+
+                    movie.Plot = movieOmdb.Plot;
+                    movie.PosterUrl = movieOmdb.Poster == "N/A" ? null : movieOmdb.Poster;
+                    movie.Runtime = movieOmdb.Runtime;
+                    movie.TrailerYoutubeVideoId = await _getTrailerClient.GetTrailer($"{movie.Title} {movie.Year} trailer");
+
+                    if (!string.IsNullOrWhiteSpace(movieOmdb.Genre) && movieOmdb.Genre != "N/A")
                     {
-                        Genre existingGenre = await _moviesContext.Genres.Where(g => g.Name.Trim().ToLower() == genre.Name.Trim().ToLower())
-                                                                         .FirstOrDefaultAsync();
-
-                        if (existingGenre == null)
+                        List<Genre> genresList = movieOmdb.Genre.Split(",", System.StringSplitOptions.RemoveEmptyEntries).Select(g => new Genre { Name = g }).ToList();
+                        foreach (Genre genre in genresList)
                         {
-                            genre.Movies.Add(movie);
-                            await _moviesContext.Genres.AddAsync(genre);
-                            existingGenre = await _moviesContext.Genres.Where(g => g.Name.Trim().ToLower() == genre.Name.Trim().ToLower())
+                            Genre existingGenre = await _moviesContext.Genres.Where(g => g.Name.Trim().ToLower() == genre.Name.Trim().ToLower())
+                                                                             .FirstOrDefaultAsync();
+
+                            if (existingGenre == null)
+                            {
+                                genre.Movies.Add(movie);
+                                await _moviesContext.Genres.AddAsync(genre);
+                                existingGenre = await _moviesContext.Genres.Where(g => g.Id == genre.Id)
+                                                                           .FirstOrDefaultAsync();
+                            }
+                            existingGenre = await _moviesContext.Genres.Where(g => g.Id == existingGenre.Id)
+                                                                       .AsTracking()
                                                                        .FirstOrDefaultAsync();
+
+                            existingGenre.Movies.Add(movie);
+                            movie.Genres.Add(existingGenre);
+
+                            await _moviesContext.SaveChangesAsync();
                         }
-                        existingGenre = await _moviesContext.Genres.Where(g => g.Id == existingGenre.Id)
-                                                                   .AsTracking()
-                                                                   .FirstOrDefaultAsync();
-
-                        existingGenre.Movies.Add(movie);
-                        movie.Genres.Add(existingGenre);
-
-                        await _moviesContext.SaveChangesAsync();
                     }
+                    await _moviesContext.SaveChangesAsync();
                 }
-                await _moviesContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Default.Error("Error in ScopedProcessingService.DoWork", ex);
             }
         }
     }
