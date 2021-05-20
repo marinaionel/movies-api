@@ -53,17 +53,19 @@ namespace MoviesApi.Worker
                             {
                                 genre.Movies.Add(movie);
                                 await _moviesContext.Genres.AddAsync(genre);
+                                await _moviesContext.SaveChangesAsync();
                                 existingGenre = await _moviesContext.Genres.Where(g => g.Id == genre.Id)
                                                                            .FirstOrDefaultAsync();
+                                movie.Genres.Add(existingGenre);
+                                await _moviesContext.SaveChangesAsync();
                             }
-                            existingGenre = await _moviesContext.Genres.Where(g => g.Id == existingGenre.Id)
-                                                                       .AsTracking()
-                                                                       .FirstOrDefaultAsync();
+                            else
+                            {
+                                existingGenre.Movies.Add(movie);
+                                movie.Genres.Add(existingGenre);
 
-                            existingGenre.Movies.Add(movie);
-                            movie.Genres.Add(existingGenre);
-
-                            await _moviesContext.SaveChangesAsync();
+                                await _moviesContext.SaveChangesAsync();
+                            }
                         }
                     }
                     await _moviesContext.SaveChangesAsync();
