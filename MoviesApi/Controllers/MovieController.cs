@@ -52,6 +52,7 @@ namespace MoviesApi.Controllers
             {
                 List<Movie> m = await _moviesContext.Movies.Include(m => m.Directors)
                                                            .Include(m => m.Actors)
+                                                           .OrderBy(m => m.Id)
                                                            .Skip(offset)
                                                            .Take(max)
                                                            .AsNoTracking()
