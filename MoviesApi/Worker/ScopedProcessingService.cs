@@ -35,7 +35,7 @@ namespace MoviesApi.Worker
                 movie.Plot = movieOmdb.Plot;
                 movie.PosterUrl = movieOmdb.Poster == "N/A" ? null : movieOmdb.Poster;
                 movie.Runtime = movieOmdb.Runtime;
-                movie.TrailerUrl = await _getTrailerClient.GetTrailer($"{movie.Title} {movie.Year} trailer");
+                movie.TrailerYoutubeVideoId = await _getTrailerClient.GetTrailer($"{movie.Title} {movie.Year} trailer");
 
                 if (!string.IsNullOrWhiteSpace(movieOmdb.Genre))
                 {

@@ -28,7 +28,7 @@ namespace MoviesApi.Core.Models
         [JsonIgnore]
         public string SearchString { get => string.Join(',', Title); }
         public string PosterUrl { get; set; }
-        public string TrailerUrl { get; set; }
+        public string TrailerYoutubeVideoId { get; set; }
         public ICollection<Person> Actors { get; set; }
         public ICollection<Genre> Genres { get; set; }
         public ICollection<Person> Directors { get; set; }
