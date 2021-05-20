@@ -66,6 +66,7 @@ namespace MoviesApi
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddLog4Net();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
