@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using MoviesApi.Common;
 
 namespace MoviesApi
 {
@@ -7,6 +8,7 @@ namespace MoviesApi
     {
         public static void Main(string[] args)
         {
+            Log.Default.Debug("Application started");
             CreateHostBuilder(args).Build().Run();
         }
 
