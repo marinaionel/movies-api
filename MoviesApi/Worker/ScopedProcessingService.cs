@@ -53,18 +53,18 @@ namespace MoviesApi.Worker
                             {
                                 genre.Movies.Add(movie);
                                 await _moviesContext.Genres.AddAsync(genre);
-                                await _moviesContext.SaveChangesAsync();
+                                try { await _moviesContext.SaveChangesAsync(); } catch { }
                             }
                             else
                             {
                                 existingGenre.Movies.Add(movie);
                                 movie.Genres.Add(existingGenre);
 
-                                await _moviesContext.SaveChangesAsync();
+                                try { await _moviesContext.SaveChangesAsync(); } catch { }
                             }
                         }
                     }
-                    await _moviesContext.SaveChangesAsync();
+                    try { await _moviesContext.SaveChangesAsync(); } catch { }
                 }
             }
             catch (Exception ex)
