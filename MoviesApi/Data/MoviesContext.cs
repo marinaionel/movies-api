@@ -199,7 +199,7 @@ namespace MoviesApi.Data
                         a => a
                             .HasOne<Genre>()
                             .WithMany()
-                            .HasForeignKey("language_id")
+                            .HasForeignKey("genre_id")
                             .HasConstraintName("genre_movie_genres_id_fk")
                             .OnDelete(DeleteBehavior.Cascade),
                         m => m
