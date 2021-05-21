@@ -42,7 +42,7 @@ namespace MoviesApi.Worker
                     movie.PosterUrl = movieOmdb.Poster == "N/A" ? null : movieOmdb.Poster;
                     movie.Runtime = movieOmdb.Runtime;
 
-                    if (movie.TrailerYoutubeVideoId == null)
+                    if (string.IsNullOrWhiteSpace(movie.TrailerYoutubeVideoId))
                         movie.TrailerYoutubeVideoId = await _getTrailerClient.GetTrailer($"{movie.Title} {movie.Year} trailer");
 
                     Movie fullMovie = await _moviesContext.Movies.Where(m => m.Id == movie.Id)
