@@ -58,8 +58,8 @@ namespace MoviesApi
             services.AddSingleton<OMDBbServiceClient>();
             services.AddSingleton<GetTrailerClient>();
 
-            services.AddHostedService<DataFillingService>();
-            services.AddScoped<IScopedProcessingService, ScopedProcessingService>();
+            //services.AddHostedService<DataFillingService>();
+            //services.AddScoped<IScopedProcessingService, ScopedProcessingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
