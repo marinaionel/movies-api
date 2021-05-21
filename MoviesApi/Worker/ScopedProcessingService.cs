@@ -96,7 +96,7 @@ namespace MoviesApi.Worker
                             }
                             else
                             {
-                                if (!fullMovie.Languages.Any(l => l.Id == existingGenre.Id))
+                                if (!fullMovie.Genres.Any(g => g.Id == existingGenre.Id))
                                 {
                                     existingGenre.Movies.Add(movie);
                                     await _moviesContext.SaveChangesAsync();
