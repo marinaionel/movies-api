@@ -85,12 +85,7 @@ namespace MoviesApi.Controllers
             if (!string.IsNullOrWhiteSpace(movieOmdb.Released) && movieOmdb.Released != Unknown)
                 movie.ReleaseDate = DateTime.Parse(movieOmdb.Released);
 
-            Movie fullMovie = await _moviesContext.Movies.Where(m => m.Id == movie.Id)
-                                                         .Include(m => m.Genres)
-                                                         .Include(m => m.Languages)
-                                                         .Include(m => m.Countries)
-                                                         .AsNoTracking()
-                                                         .FirstOrDefaultAsync();
+            await _moviesContext.SaveChangesAsync();
 
             if (!string.IsNullOrWhiteSpace(movieOmdb.Country) && movieOmdb.Country != Unknown)
             {
@@ -110,7 +105,7 @@ namespace MoviesApi.Controllers
                     }
                     else
                     {
-                        if (!fullMovie.Countries.Any(l => l.Id == existingCountry.Id))
+                        if (!movie.Countries.Any(l => l.Id == existingCountry.Id))
                         {
                             movie.Countries.Add(existingCountry);
                             await _moviesContext.SaveChangesAsync();
@@ -137,7 +132,7 @@ namespace MoviesApi.Controllers
                     }
                     else
                     {
-                        if (!fullMovie.Languages.Any(l => l.Id == existingLanguage.Id))
+                        if (!movie.Languages.Any(l => l.Id == existingLanguage.Id))
                         {
                             movie.Languages.Add(existingLanguage);
                             await _moviesContext.SaveChangesAsync();
@@ -164,7 +159,7 @@ namespace MoviesApi.Controllers
                     }
                     else
                     {
-                        if (!fullMovie.Genres.Any(g => g.Id == existingGenre.Id))
+                        if (!movie.Genres.Any(g => g.Id == existingGenre.Id))
                         {
                             movie.Genres.Add(existingGenre);
                             await _moviesContext.SaveChangesAsync();
