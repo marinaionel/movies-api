@@ -15,6 +15,7 @@ namespace MoviesApi.Data
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Chart> Charts { get; set; }
+        public DbSet<Language> Languages { get; set; }
 
         private const string Schema = "moviesfile";
 
@@ -35,6 +36,21 @@ namespace MoviesApi.Data
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
             modelBuilder.HasDefaultSchema(Schema);
 
+            modelBuilder.Entity<Language>(entity =>
+            {
+                entity.HasIndex(g => g.Id)
+                      .IsUnique();
+
+                entity.Property(g => g.Id)
+                      .ValueGeneratedOnAdd()
+                      .HasColumnName("id");
+
+                entity.Property(l => l.Name)
+                      .HasColumnName("name");
+
+                entity.ToTable("languages", Schema);
+            });
+
             modelBuilder.Entity<Genre>(entity =>
             {
                 entity.HasIndex(g => g.Id)
@@ -43,6 +59,9 @@ namespace MoviesApi.Data
                 entity.Property(g => g.Id)
                       .ValueGeneratedOnAdd()
                       .HasColumnName("id");
+
+                entity.Property(g => g.Name)
+                      .HasColumnName("name");
 
                 entity.ToTable("genres", Schema);
             });
@@ -156,9 +175,39 @@ namespace MoviesApi.Data
                             .HasConstraintName("directors_movies_id_fk")
                             .OnDelete(DeleteBehavior.ClientCascade));
 
+                entity.HasMany(m => m.Languages)
+                      .WithMany(l => l.Movies)
+                      .UsingEntity<Dictionary<string, object>>(
+                        "language_movie",
+                        a => a
+                            .HasOne<Language>()
+                            .WithMany()
+                            .HasForeignKey("language_id")
+                            .HasConstraintName("language_movie_languages_id_fk")
+                            .OnDelete(DeleteBehavior.Cascade),
+                        m => m
+                            .HasOne<Movie>()
+                            .WithMany()
+                            .HasForeignKey("movie_id")
+                            .HasConstraintName("language_movie_movies_id_fk")
+                            .OnDelete(DeleteBehavior.ClientCascade));
+
                 entity.HasMany(m => m.Genres)
-                      .WithMany(g => g.Movies)
-                      .UsingEntity(t => t.ToTable("genre_movie"));
+                      .WithMany(l => l.Movies)
+                      .UsingEntity<Dictionary<string, object>>(
+                        "genre_movie",
+                        a => a
+                            .HasOne<Genre>()
+                            .WithMany()
+                            .HasForeignKey("language_id")
+                            .HasConstraintName("genre_movie_genres_id_fk")
+                            .OnDelete(DeleteBehavior.Cascade),
+                        m => m
+                            .HasOne<Movie>()
+                            .WithMany()
+                            .HasForeignKey("movie_id")
+                            .HasConstraintName("genre_movie_movies_id_fk")
+                            .OnDelete(DeleteBehavior.ClientCascade));
             });
 
             modelBuilder.Entity<Rating>(entity =>

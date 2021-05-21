@@ -32,6 +32,7 @@ namespace MoviesApi.Core.Models
         public ICollection<Person> Actors { get; set; }
         public ICollection<Genre> Genres { get; set; }
         public ICollection<Person> Directors { get; set; }
+        public ICollection<Language> Languages { get; set; }
         [JsonIgnore]
         public ICollection<Chart> Charts { get; set; }
         public string Runtime { get; set; }
