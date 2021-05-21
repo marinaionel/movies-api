@@ -11,7 +11,6 @@ using Microsoft.OpenApi.Models;
 using MoviesApi.ApiClient.AzureFunctions;
 using MoviesApi.ApiClient.OMDbApi;
 using MoviesApi.Data;
-using MoviesApi.Worker;
 using Newtonsoft.Json;
 using System;
 
@@ -98,10 +97,9 @@ namespace MoviesApi
                 app.UseHsts();
             }
 
-            app.UseCors(a => a.WithOrigins(new string[] { "https://marinaionel.github.io/", "http://localhost:4200/" })
+            app.UseCors(a => a.AllowAnyOrigin()
                               .AllowAnyHeader()
-                              .AllowAnyMethod()
-                              .AllowCredentials());
+                              .AllowAnyMethod());
 
             app.UseHttpsRedirection();
 
