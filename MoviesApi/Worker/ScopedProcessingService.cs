@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MoviesApi.ApiClient.AzureFunctions;
 using MoviesApi.ApiClient.OMDbApi;
 using MoviesApi.Common;
 using MoviesApi.Core.Models;
@@ -17,13 +16,11 @@ namespace MoviesApi.Worker
         private const string Unknown = "N/A";
         private MoviesContext _moviesContext;
         private OMDBbServiceClient _oMDBbServiceClient;
-        private GetTrailerClient _getTrailerClient;
 
-        public ScopedProcessingService(MoviesContext moviesContext, OMDBbServiceClient oMDBbServiceClient, GetTrailerClient getTrailerClient)
+        public ScopedProcessingService(MoviesContext moviesContext, OMDBbServiceClient oMDBbServiceClient)
         {
             _moviesContext = moviesContext;
             _oMDBbServiceClient = oMDBbServiceClient;
-            _getTrailerClient = getTrailerClient;
         }
 
         public async Task DoWork(CancellationToken stoppingToken)
@@ -41,9 +38,6 @@ namespace MoviesApi.Worker
                     movie.Plot = movieOmdb.Plot;
                     movie.PosterUrl = movieOmdb.Poster == "N/A" ? null : movieOmdb.Poster;
                     movie.Runtime = movieOmdb.Runtime;
-
-                    if (string.IsNullOrWhiteSpace(movie.TrailerYoutubeVideoId))
-                        movie.TrailerYoutubeVideoId = await _getTrailerClient.GetTrailer($"{movie.Title} {movie.Year} trailer");
 
                     Movie fullMovie = await _moviesContext.Movies.Where(m => m.Id == movie.Id)
                                                                  .Include(m => m.Genres)
