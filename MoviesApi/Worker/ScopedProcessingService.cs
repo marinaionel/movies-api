@@ -102,8 +102,8 @@ namespace MoviesApi.Worker
                             }
                         }
                     }
-                    await _moviesContext.SaveChangesAsync();
                 }
+                await _moviesContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
