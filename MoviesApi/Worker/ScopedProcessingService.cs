@@ -40,19 +40,50 @@ namespace MoviesApi.Worker
                         movie.Plot = movieOmdb.Plot;
                         movie.PosterUrl = movieOmdb.Poster == "N/A" ? null : movieOmdb.Poster;
                         movie.Runtime = movieOmdb.Runtime;
+                        movie.BoxOffice = movieOmdb.BoxOffice;
 
+                        if (!string.IsNullOrWhiteSpace(movieOmdb.Released) && movieOmdb.Released != Unknown)
+                            movie.ReleaseDate = DateTime.Parse(movieOmdb.Released);
 
                         Movie fullMovie = await _moviesContext.Movies.Where(m => m.Id == movie.Id)
                                                                      .Include(m => m.Genres)
                                                                      .Include(m => m.Languages)
+                                                                     .Include(m => m.Countries)
                                                                      .AsNoTracking()
                                                                      .FirstOrDefaultAsync();
 
+                        if (!string.IsNullOrWhiteSpace(movieOmdb.Country) && movieOmdb.Country != Unknown)
+                        {
+                            List<Country> countriesList = movieOmdb.Country.Split(",", StringSplitOptions.RemoveEmptyEntries)
+                                                                           .Select(c => new Country { Name = c.Trim() })
+                                                                           .ToList();
+                            foreach (Country country in countriesList)
+                            {
+                                Country existingCountry = await _moviesContext.Countries.Where(c => c.Name.ToLower() == country.Name.ToLower())
+                                                                                        .AsTracking()
+                                                                                        .FirstOrDefaultAsync();
+                                if (existingCountry == null)
+                                {
+                                    country.Movies.Add(movie);
+                                    await _moviesContext.Countries.AddAsync(country);
+                                    await _moviesContext.SaveChangesAsync();
+                                }
+                                else
+                                {
+                                    if (!fullMovie.Countries.Any(l => l.Id == existingCountry.Id))
+                                    {
+                                        existingCountry.Movies.Add(movie);
+                                        await _moviesContext.SaveChangesAsync();
+                                    }
+                                }
+                            }
+                        }
+
                         if (!string.IsNullOrWhiteSpace(movieOmdb.Language) && movieOmdb.Language != Unknown)
                         {
-                            List<Language> languagesList = movieOmdb.Genre.Split(",", StringSplitOptions.RemoveEmptyEntries)
-                                                                          .Select(l => new Language { Name = l.Trim() })
-                                                                          .ToList();
+                            List<Language> languagesList = movieOmdb.Language.Split(",", StringSplitOptions.RemoveEmptyEntries)
+                                                                             .Select(l => new Language { Name = l.Trim() })
+                                                                             .ToList();
                             foreach (Language language in languagesList)
                             {
                                 Language existingLanguage = await _moviesContext.Languages.Where(l => l.Name.ToLower() == language.Name.ToLower())

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -5,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MoviesApi.ApiClient.AzureFunctions;
 using MoviesApi.ApiClient.OMDbApi;
@@ -41,6 +43,23 @@ namespace MoviesApi
                 opt.SerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
                 opt.SerializerSettings.Formatting = Formatting.None;
             });
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
+                    {
+                        options.Authority = "https://securetoken.google.com/1:475689474726:web:2894f95c246ccbe3963267";
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidIssuer = "https://securetoken.google.com/1:475689474726:web:2894f95c246ccbe3963267",
+                            ValidateAudience = true,
+                            ValidAudience = "1:475689474726:web:2894f95c246ccbe3963267",
+                            ValidateLifetime = true
+                        };
+                    });
+
+            services.AddSession(options => { options.IdleTimeout = TimeSpan.FromMinutes(60); });
+            services.AddDistributedMemoryCache();
 
             services.AddDbContext<MoviesContext>(op =>
             {
@@ -79,9 +98,10 @@ namespace MoviesApi
                 app.UseHsts();
             }
 
-            app.UseCors(a => a.AllowAnyOrigin()
+            app.UseCors(a => a.WithOrigins(new string[] { "https://marinaionel.github.io/", "http://localhost:4200/" })
                               .AllowAnyHeader()
-                              .AllowAnyMethod());
+                              .AllowAnyMethod()
+                              .AllowCredentials());
 
             app.UseHttpsRedirection();
 
@@ -90,6 +110,7 @@ namespace MoviesApi
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

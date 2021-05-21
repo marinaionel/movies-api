@@ -16,6 +16,7 @@ namespace MoviesApi.Data
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Chart> Charts { get; set; }
         public DbSet<Language> Languages { get; set; }
+        public DbSet<Country> Countries { get; set; }
 
         private const string Schema = "moviesfile";
 
@@ -36,6 +37,22 @@ namespace MoviesApi.Data
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
             modelBuilder.HasDefaultSchema(Schema);
 
+            modelBuilder.Entity<Country>(entity =>
+            {
+                entity.HasIndex(g => g.Id)
+                      .IsUnique();
+
+                entity.Property(g => g.Id)
+                      .ValueGeneratedOnAdd()
+                      .HasColumnName("id");
+
+                entity.Property(l => l.Name)
+                      .HasColumnName("name")
+                      .HasColumnType("nvarchar(30)");
+
+                entity.ToTable("country", Schema);
+            });
+
             modelBuilder.Entity<Language>(entity =>
             {
                 entity.HasIndex(g => g.Id)
@@ -46,7 +63,8 @@ namespace MoviesApi.Data
                       .HasColumnName("id");
 
                 entity.Property(l => l.Name)
-                      .HasColumnName("name");
+                      .HasColumnName("name")
+                      .HasColumnType("nvarchar(30)");
 
                 entity.ToTable("languages", Schema);
             });
@@ -61,7 +79,8 @@ namespace MoviesApi.Data
                       .HasColumnName("id");
 
                 entity.Property(g => g.Name)
-                      .HasColumnName("name");
+                      .HasColumnName("name")
+                      .HasColumnType("nvarchar(30)");
 
                 entity.ToTable("genres", Schema);
             });
@@ -124,6 +143,14 @@ namespace MoviesApi.Data
                 entity.Property(m => m.Plot)
                       .HasColumnType("text")
                       .HasColumnName("plot");
+
+                entity.Property(m => m.BoxOffice)
+                      .HasColumnType("nvarchar(30)")
+                      .HasColumnName("box_office");
+
+                entity.Property(m => m.ReleaseDate)
+                      .HasColumnType("date")
+                      .HasColumnName("release_date");
 
                 entity.ToTable("movies", Schema);
 
@@ -207,6 +234,23 @@ namespace MoviesApi.Data
                             .WithMany()
                             .HasForeignKey("movie_id")
                             .HasConstraintName("genre_movie_movies_id_fk")
+                            .OnDelete(DeleteBehavior.ClientCascade));
+
+                entity.HasMany(m => m.Countries)
+                      .WithMany(l => l.Movies)
+                      .UsingEntity<Dictionary<string, object>>(
+                        "country_movie",
+                        a => a
+                            .HasOne<Country>()
+                            .WithMany()
+                            .HasForeignKey("country_id")
+                            .HasConstraintName("country_movie_country_id_fk")
+                            .OnDelete(DeleteBehavior.Cascade),
+                        m => m
+                            .HasOne<Movie>()
+                            .WithMany()
+                            .HasForeignKey("movie_id")
+                            .HasConstraintName("country_movie_movies_id_fk")
                             .OnDelete(DeleteBehavior.ClientCascade));
             });
 
