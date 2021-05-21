@@ -41,7 +41,9 @@ namespace MoviesApi.Worker
                     movie.Plot = movieOmdb.Plot;
                     movie.PosterUrl = movieOmdb.Poster == "N/A" ? null : movieOmdb.Poster;
                     movie.Runtime = movieOmdb.Runtime;
-                    movie.TrailerYoutubeVideoId = await _getTrailerClient.GetTrailer($"{movie.Title} {movie.Year} trailer");
+
+                    if (movie.TrailerYoutubeVideoId == null)
+                        movie.TrailerYoutubeVideoId = await _getTrailerClient.GetTrailer($"{movie.Title} {movie.Year} trailer");
 
                     Movie fullMovie = await _moviesContext.Movies.Where(m => m.Id == movie.Id)
                                                                  .Include(m => m.Genres)
