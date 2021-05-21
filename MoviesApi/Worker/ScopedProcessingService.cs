@@ -32,68 +32,72 @@ namespace MoviesApi.Worker
 
                 foreach (Movie movie in movies)
                 {
-                    Core.Models.OMDb.Movie movieOmdb = await _oMDBbServiceClient.GetMovie(movie.IdString);
-                    if (movieOmdb == null) continue;
-
-                    movie.Plot = movieOmdb.Plot;
-                    movie.PosterUrl = movieOmdb.Poster == "N/A" ? null : movieOmdb.Poster;
-                    movie.Runtime = movieOmdb.Runtime;
-
-                    Movie fullMovie = await _moviesContext.Movies.Where(m => m.Id == movie.Id)
-                                                                 .Include(m => m.Genres)
-                                                                 .Include(m => m.Languages)
-                                                                 .AsNoTracking()
-                                                                 .FirstOrDefaultAsync();
-
-                    if (!string.IsNullOrWhiteSpace(movieOmdb.Language) && movieOmdb.Language != Unknown)
+                    if (string.IsNullOrWhiteSpace(movie.Plot) && string.IsNullOrWhiteSpace(movie.Runtime))
                     {
-                        List<Language> languagesList = movieOmdb.Genre.Split(",", StringSplitOptions.RemoveEmptyEntries)
-                                                                      .Select(l => new Language { Name = l.Trim() })
-                                                                      .ToList();
-                        foreach (Language language in languagesList)
+                        Core.Models.OMDb.Movie movieOmdb = await _oMDBbServiceClient.GetMovie(movie.IdString);
+                        if (movieOmdb == null) continue;
+
+                        movie.Plot = movieOmdb.Plot;
+                        movie.PosterUrl = movieOmdb.Poster == "N/A" ? null : movieOmdb.Poster;
+                        movie.Runtime = movieOmdb.Runtime;
+
+
+                        Movie fullMovie = await _moviesContext.Movies.Where(m => m.Id == movie.Id)
+                                                                     .Include(m => m.Genres)
+                                                                     .Include(m => m.Languages)
+                                                                     .AsNoTracking()
+                                                                     .FirstOrDefaultAsync();
+
+                        if (!string.IsNullOrWhiteSpace(movieOmdb.Language) && movieOmdb.Language != Unknown)
                         {
-                            Language existingLanguage = await _moviesContext.Languages.Where(l => l.Name.ToLower() == language.Name.ToLower())
-                                                                                      .AsTracking()
-                                                                                      .FirstOrDefaultAsync();
-                            if (existingLanguage == null)
+                            List<Language> languagesList = movieOmdb.Genre.Split(",", StringSplitOptions.RemoveEmptyEntries)
+                                                                          .Select(l => new Language { Name = l.Trim() })
+                                                                          .ToList();
+                            foreach (Language language in languagesList)
                             {
-                                language.Movies.Add(movie);
-                                await _moviesContext.Languages.AddAsync(language);
-                                await _moviesContext.SaveChangesAsync();
-                            }
-                            else
-                            {
-                                if (!fullMovie.Languages.Any(l => l.Id == existingLanguage.Id))
+                                Language existingLanguage = await _moviesContext.Languages.Where(l => l.Name.ToLower() == language.Name.ToLower())
+                                                                                          .AsTracking()
+                                                                                          .FirstOrDefaultAsync();
+                                if (existingLanguage == null)
                                 {
-                                    existingLanguage.Movies.Add(movie);
+                                    language.Movies.Add(movie);
+                                    await _moviesContext.Languages.AddAsync(language);
                                     await _moviesContext.SaveChangesAsync();
+                                }
+                                else
+                                {
+                                    if (!fullMovie.Languages.Any(l => l.Id == existingLanguage.Id))
+                                    {
+                                        existingLanguage.Movies.Add(movie);
+                                        await _moviesContext.SaveChangesAsync();
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    if (!string.IsNullOrWhiteSpace(movieOmdb.Genre) && movieOmdb.Genre != Unknown)
-                    {
-                        List<Genre> genresList = movieOmdb.Genre.Split(",", StringSplitOptions.RemoveEmptyEntries)
-                                                                .Select(g => new Genre { Name = g.Trim() })
-                                                                .ToList();
-                        foreach (Genre genre in genresList)
+                        if (!string.IsNullOrWhiteSpace(movieOmdb.Genre) && movieOmdb.Genre != Unknown)
                         {
-                            Genre existingGenre = await _moviesContext.Genres.Where(g => g.Name.Trim().ToLower() == genre.Name.Trim().ToLower())
-                                                                             .FirstOrDefaultAsync();
+                            List<Genre> genresList = movieOmdb.Genre.Split(",", StringSplitOptions.RemoveEmptyEntries)
+                                                                    .Select(g => new Genre { Name = g.Trim() })
+                                                                    .ToList();
+                            foreach (Genre genre in genresList)
+                            {
+                                Genre existingGenre = await _moviesContext.Genres.Where(g => g.Name.Trim().ToLower() == genre.Name.Trim().ToLower())
+                                                                                 .FirstOrDefaultAsync();
 
-                            if (existingGenre == null)
-                            {
-                                genre.Movies.Add(movie);
-                                await _moviesContext.Genres.AddAsync(genre);
-                                await _moviesContext.SaveChangesAsync();
-                            }
-                            else
-                            {
-                                if (!fullMovie.Genres.Any(g => g.Id == existingGenre.Id))
+                                if (existingGenre == null)
                                 {
-                                    existingGenre.Movies.Add(movie);
+                                    genre.Movies.Add(movie);
+                                    await _moviesContext.Genres.AddAsync(genre);
                                     await _moviesContext.SaveChangesAsync();
+                                }
+                                else
+                                {
+                                    if (!fullMovie.Genres.Any(g => g.Id == existingGenre.Id))
+                                    {
+                                        existingGenre.Movies.Add(movie);
+                                        await _moviesContext.SaveChangesAsync();
+                                    }
                                 }
                             }
                         }
