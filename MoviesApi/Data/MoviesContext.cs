@@ -1,10 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using MoviesApi.Core.Enums;
 using MoviesApi.Core.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MoviesApi.Data
 {
@@ -12,7 +8,7 @@ namespace MoviesApi.Data
     {
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Person> People { get; set; }
-        public DbSet<Rating> Ratings { get; set; }
+        public DbSet<TotalRatings> Ratings { get; set; }
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Chart> Charts { get; set; }
         public DbSet<Language> Languages { get; set; }
@@ -110,16 +106,9 @@ namespace MoviesApi.Data
                       .HasColumnType("text")
                       .HasColumnName("name");
 
-                ValueComparer<ICollection<CrewMemberType>> valueComparer = new(
-                                                                    (c1, c2) => c1.SequenceEqual(c2),
-                                                                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                                                                    c => c.ToHashSet());
-
-                entity.Property(p => p.Jobs).HasColumnName("jobs")
-                                            .HasConversion(obj => string.Join(',', obj.Select(e => Enum.GetName(e.GetType(), e))),
-                                                           obj => obj.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(o => (CrewMemberType)Enum.Parse(typeof(CrewMemberType), o)).ToHashSet() ?? new HashSet<CrewMemberType>())
-                                            .Metadata
-                                            .SetValueComparer(valueComparer);
+                entity.Property(e => e.ImageUrl)
+                      .HasColumnName("image_url")
+                      .HasColumnType("nvarchar(max)");
             });
 
             modelBuilder.Entity<Movie>(entity =>
@@ -254,7 +243,7 @@ namespace MoviesApi.Data
                             .OnDelete(DeleteBehavior.ClientCascade));
             });
 
-            modelBuilder.Entity<Rating>(entity =>
+            modelBuilder.Entity<TotalRatings>(entity =>
             {
                 entity.HasNoKey();
 

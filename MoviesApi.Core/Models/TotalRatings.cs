@@ -2,7 +2,7 @@
 
 namespace MoviesApi.Core.Models
 {
-    public class Rating
+    public class TotalRatings
     {
         public int? MovieId { get; set; }
         public float? AverageRating { get; set; }

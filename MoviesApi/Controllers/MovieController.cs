@@ -9,7 +9,6 @@ using MoviesApi.Core.Models;
 using MoviesApi.Data;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -31,13 +30,14 @@ namespace MoviesApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Movie>> GetMovieAsync(string id)
+        public async Task<ActionResult<Movie>> GetMovieAsync(string movieId)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+            if (string.IsNullOrWhiteSpace(movieId))
+                return BadRequest();
+
             try
             {
-                if (!MovieHelper.ConvertIdToInt(id, out int idAsInt))
+                if (!MovieHelper.ConvertIdToInt(movieId, out int idAsInt))
                     return BadRequest();
 
                 Movie m = await _moviesContext.Movies.Where(m => m.Id == idAsInt)
@@ -56,15 +56,11 @@ namespace MoviesApi.Controllers
                     m.TrailerYoutubeVideoId = await _getTrailerClient.GetTrailer($"{m.Title} {m.Year} trailer");
                     await _moviesContext.SaveChangesAsync();
                 }
-                stopwatch.Stop();
-                Log.Default.Info($"Get movie took {stopwatch.ElapsedMilliseconds} ms");
                 return m == null ? NotFound() : m;
             }
             catch (Exception ex)
             {
-                Log.Default.Error($"Error getting movie {id}", ex);
-                stopwatch.Stop();
-                Log.Default.Info($"Get movie took {stopwatch.ElapsedMilliseconds} ms");
+                Log.Default.Error($"Error getting movie {movieId}", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
@@ -191,10 +187,39 @@ namespace MoviesApi.Controllers
             }
         }
 
-        [HttpGet("reviews")]
-        public IEnumerable<Review> GetReviews(string movieId, int max, int offset)
+        [HttpGet("totalratings")]
+        public async Task<ActionResult<TotalRatings>> GetMovieTotalRatings(string movieId)
         {
-            return new List<Review>();
+            try
+            {
+                if (string.IsNullOrWhiteSpace(movieId))
+                    return BadRequest();
+
+                if (!MovieHelper.ConvertIdToInt(movieId, out int idAsInt))
+                    return BadRequest();
+
+                TotalRatings totalRatings = await _moviesContext.Ratings.Where(r => r.MovieId == idAsInt).FirstOrDefaultAsync();
+                return totalRatings == null ? NotFound() : totalRatings;
+            }
+            catch (Exception ex)
+            {
+                Log.Default.Error($"Error GetMovieTotalRatings for movie {movieId}", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpGet("reviews")]
+        public async Task<ActionResult<IEnumerable<Review>>> GetReviews(string movieId, int max, int offset)
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Log.Default.Error($"Error getting reviews for movie {movieId}", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
     }
 }

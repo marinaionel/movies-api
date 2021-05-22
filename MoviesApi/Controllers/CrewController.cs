@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesApi.Common;
-using MoviesApi.Core.Enums;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
 using System;
@@ -46,33 +45,20 @@ namespace MoviesApi.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<ActionResult<List<Person>>> GetCrewMembersAsync(int max, int offset, CrewMemberType? type)
+        public async Task<ActionResult<List<Person>>> GetCrewMembersAsync(int max, int offset)
         {
             try
             {
-                if (type == null)
-                {
-                    return await _moviesContext.People
-                                               .Include(p => p.ActedInMovies)
-                                               .ThenInclude(m => m.Genres)
-                                               .Include(p => p.DirectedMovies)
-                                               .AsNoTracking()
-                                               .ToListAsync();
-                }
-                else
-                {
-                    return await _moviesContext.People
-                                               .Include(p => p.ActedInMovies)
-                                               .ThenInclude(m => m.Genres)
-                                               .Include(p => p.DirectedMovies)
-                                               .Where(p => p.Jobs.Contains((CrewMemberType)type))
-                                               .AsNoTracking()
-                                               .ToListAsync();
-                }
+                return await _moviesContext.People
+                                           .Include(p => p.ActedInMovies)
+                                           .ThenInclude(m => m.Genres)
+                                           .Include(p => p.DirectedMovies)
+                                           .AsNoTracking()
+                                           .ToListAsync();
             }
             catch (Exception ex)
             {
-                Log.Default.Error($"Error getting crew members of type {type}", ex);
+                Log.Default.Error($"Error getting crew members", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
