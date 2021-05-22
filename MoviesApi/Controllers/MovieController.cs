@@ -29,7 +29,7 @@ namespace MoviesApi.Controllers
             _oMDBbServiceClient = oMDBbServiceClient;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{movieId}")]
         public async Task<ActionResult<Movie>> GetMovieAsync(string movieId)
         {
             if (string.IsNullOrWhiteSpace(movieId))
