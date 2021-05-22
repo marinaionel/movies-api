@@ -53,8 +53,7 @@ namespace MoviesApi.Controllers
 
                 if (m != null && string.IsNullOrWhiteSpace(m.TrailerYoutubeVideoId))
                 {
-                    Movie trackedMovie = await _moviesContext.Movies.Where(m1 => m1.Id == m.Id).AsTracking().FirstOrDefaultAsync();
-                    trackedMovie.TrailerYoutubeVideoId = await _getTrailerClient.GetTrailer($"{m.Title} {m.Year} trailer");
+                    m.TrailerYoutubeVideoId = await _getTrailerClient.GetTrailer($"{m.Title} {m.Year} trailer");
                     await _moviesContext.SaveChangesAsync();
                 }
                 stopwatch.Stop();
