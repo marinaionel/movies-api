@@ -8,7 +8,7 @@ namespace MoviesApi.ApiClient.OMDbApi
 {
     public class OMDBbServiceClient
     {
-        private const string apiLink = "http://www.omdbapi.com/?i={0}&apikey=8b151be9";
+        private const string apiLink = "http://www.omdbapi.com/?i={0}&apikey=8b151be9&plot=full";
 
         public async Task<Movie> GetMovie(string id)
         {
