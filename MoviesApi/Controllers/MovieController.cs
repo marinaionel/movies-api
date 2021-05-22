@@ -77,7 +77,7 @@ namespace MoviesApi.Controllers
             if (movieOmdb == null) return;
 
             movie.Plot = movieOmdb.Plot;
-            if (string.IsNullOrWhiteSpace(movieOmdb.Poster) && movieOmdb.Poster != Unknown)
+            if (!string.IsNullOrWhiteSpace(movieOmdb.Poster) && movieOmdb.Poster != Unknown)
                 movie.PosterUrl = movieOmdb.Poster;
             movie.Runtime = movieOmdb.Runtime;
             movie.BoxOffice = movieOmdb.BoxOffice;
