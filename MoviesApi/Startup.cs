@@ -9,8 +9,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MoviesApi.ApiClient.AzureFunctions;
+using MoviesApi.ApiClient.ImageApi;
 using MoviesApi.ApiClient.OMDbApi;
 using MoviesApi.Data;
+using MoviesApi.DataFillers;
 using Newtonsoft.Json;
 using System;
 
@@ -73,8 +75,11 @@ namespace MoviesApi
             });
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
 
-            services.AddSingleton<OMDBbServiceClient>();
-            services.AddSingleton<GetTrailerClient>();
+            services.AddSingleton<OMDBbClient>();
+            services.AddSingleton<YoutubeClient>();
+            services.AddSingleton<QuantClient>();
+            services.AddSingleton<MovieFiller>();
+            services.AddSingleton<PersonFiller>();
 
             //services.AddHostedService<DataFillingService>();
             //services.AddScoped<IScopedProcessingService, ScopedProcessingService>();

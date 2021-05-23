@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MoviesApi.Common;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
+using MoviesApi.DataFillers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,12 @@ namespace MoviesApi.Controllers
     public class CrewController : ControllerBase
     {
         private MoviesContext _moviesContext;
-        public CrewController(MoviesContext moviesContext)
+        private PersonFiller _personFiller;
+
+        public CrewController(MoviesContext moviesContext, PersonFiller personFiller)
         {
             _moviesContext = moviesContext;
+            _personFiller = personFiller;
         }
 
         [HttpGet("{id}")]
@@ -29,13 +33,17 @@ namespace MoviesApi.Controllers
                 if (!int.TryParse(id, out int idAsInt))
                     return BadRequest();
 
-                return await _moviesContext.People
+                Person person = await _moviesContext.People
                                            .Where(p => p.Id == idAsInt)
                                            .Include(p => p.ActedInMovies)
                                            .ThenInclude(m => m.Genres)
                                            .Include(p => p.DirectedMovies)
                                            .AsNoTracking()
                                            .FirstOrDefaultAsync();
+
+                if (person == null) return NotFound();
+                await _personFiller.FillPerson(person, _moviesContext);
+                return person;
             }
             catch (Exception ex)
             {

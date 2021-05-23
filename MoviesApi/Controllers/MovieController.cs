@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MoviesApi.ApiClient.AzureFunctions;
-using MoviesApi.ApiClient.OMDbApi;
 using MoviesApi.Common;
 using MoviesApi.Core.Helpers;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
+using MoviesApi.DataFillers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,14 +18,12 @@ namespace MoviesApi.Controllers
     public class MovieController : ControllerBase
     {
         private MoviesContext _moviesContext;
-        private GetTrailerClient _getTrailerClient;
-        private OMDBbServiceClient _oMDBbServiceClient;
+        private MovieFiller _movieFiller;
 
-        public MovieController(MoviesContext moviesContext, GetTrailerClient getTrailerClient, OMDBbServiceClient oMDBbServiceClient)
+        public MovieController(MoviesContext moviesContext, MovieFiller movieFiller)
         {
             _moviesContext = moviesContext;
-            _getTrailerClient = getTrailerClient;
-            _oMDBbServiceClient = oMDBbServiceClient;
+            _movieFiller = movieFiller;
         }
 
         [HttpGet("{movieId}")]
@@ -48,15 +45,11 @@ namespace MoviesApi.Controllers
                                                      .Include(m => m.Countries)
                                                      .AsNoTracking()
                                                      .FirstOrDefaultAsync();
-                if (m != null)
-                    await FillMovie(m);
 
-                if (m != null && string.IsNullOrWhiteSpace(m.TrailerYoutubeVideoId))
-                {
-                    m.TrailerYoutubeVideoId = await _getTrailerClient.GetTrailer($"{m.Title} {m.Year} trailer");
-                    await _moviesContext.SaveChangesAsync();
-                }
-                return m == null ? NotFound() : m;
+                if (m == null) return NotFound();
+                await _movieFiller.FillMovie(m, _moviesContext);
+                m.Ratings = await _moviesContext.Ratings.Where(r => r.MovieId == m.Id).FirstOrDefaultAsync();
+                return m;
             }
             catch (Exception ex)
             {
@@ -65,111 +58,12 @@ namespace MoviesApi.Controllers
             }
         }
 
-        private const string Unknown = "N/A";
-        private async Task FillMovie(Movie movie)
-        {
-            Core.Models.OMDb.Movie movieOmdb = await _oMDBbServiceClient.GetMovie(movie.IdString);
-            if (movieOmdb == null) return;
-
-            movie.Plot = movieOmdb.Plot;
-            if (!string.IsNullOrWhiteSpace(movieOmdb.Poster) && movieOmdb.Poster != Unknown)
-                movie.PosterUrl = movieOmdb.Poster;
-            movie.Runtime = movieOmdb.Runtime;
-            movie.BoxOffice = movieOmdb.BoxOffice;
-
-            if (!string.IsNullOrWhiteSpace(movieOmdb.Released) && movieOmdb.Released != Unknown)
-                movie.ReleaseDate = DateTime.Parse(movieOmdb.Released);
-
-            await _moviesContext.SaveChangesAsync();
-
-            if (!string.IsNullOrWhiteSpace(movieOmdb.Country) && movieOmdb.Country != Unknown)
-            {
-                List<Country> countriesList = movieOmdb.Country.Split(",", StringSplitOptions.RemoveEmptyEntries)
-                                                               .Select(c => new Country { Name = c.Trim() })
-                                                               .ToList();
-                foreach (Country country in countriesList)
-                {
-                    Country existingCountry = await _moviesContext.Countries.Where(c => c.Name.ToLower() == country.Name.ToLower())
-                                                                            .AsTracking()
-                                                                            .FirstOrDefaultAsync();
-                    if (existingCountry == null)
-                    {
-                        await _moviesContext.Countries.AddAsync(country);
-                        movie.Countries.Add(country);
-                        await _moviesContext.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        if (!movie.Countries.Any(l => l.Id == existingCountry.Id))
-                        {
-                            movie.Countries.Add(existingCountry);
-                            await _moviesContext.SaveChangesAsync();
-                        }
-                    }
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(movieOmdb.Language) && movieOmdb.Language != Unknown)
-            {
-                List<Language> languagesList = movieOmdb.Language.Split(",", StringSplitOptions.RemoveEmptyEntries)
-                                                              .Select(l => new Language { Name = l.Trim() })
-                                                              .ToList();
-                foreach (Language language in languagesList)
-                {
-                    Language existingLanguage = await _moviesContext.Languages.Where(l => l.Name.ToLower() == language.Name.ToLower())
-                                                                              .AsTracking()
-                                                                              .FirstOrDefaultAsync();
-                    if (existingLanguage == null)
-                    {
-                        await _moviesContext.Languages.AddAsync(language);
-                        movie.Languages.Add(language);
-                        await _moviesContext.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        if (!movie.Languages.Any(l => l.Id == existingLanguage.Id))
-                        {
-                            movie.Languages.Add(existingLanguage);
-                            await _moviesContext.SaveChangesAsync();
-                        }
-                    }
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(movieOmdb.Genre) && movieOmdb.Genre != Unknown)
-            {
-                List<Genre> genresList = movieOmdb.Genre.Split(",", StringSplitOptions.RemoveEmptyEntries)
-                                                        .Select(g => new Genre { Name = g.Trim() })
-                                                        .ToList();
-                foreach (Genre genre in genresList)
-                {
-                    Genre existingGenre = await _moviesContext.Genres.Where(g => g.Name.Trim().ToLower() == genre.Name.Trim().ToLower())
-                                                                     .FirstOrDefaultAsync();
-
-                    if (existingGenre == null)
-                    {
-                        await _moviesContext.Genres.AddAsync(genre);
-                        movie.Genres.Add(genre);
-                        await _moviesContext.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        if (!movie.Genres.Any(g => g.Id == existingGenre.Id))
-                        {
-                            movie.Genres.Add(existingGenre);
-                            await _moviesContext.SaveChangesAsync();
-                        }
-                    }
-                }
-            }
-        }
-
         [HttpGet("all")]
         public async Task<ActionResult<List<Movie>>> GetMoviesAsync(int max, int offset)
         {
             try
             {
-                List<Movie> m = await _moviesContext.Movies.Include(m => m.Directors)
+                List<Movie> movies = await _moviesContext.Movies.Include(m => m.Directors)
                                                            .Include(m => m.Actors)
                                                            .Include(m => m.Languages)
                                                            .Include(m => m.Genres)
@@ -178,32 +72,12 @@ namespace MoviesApi.Controllers
                                                            .Take(max)
                                                            .AsNoTracking()
                                                            .ToListAsync();
-                return m;
+                movies.ForEach(m => m.Ratings = _moviesContext.Ratings.Where(r => r.MovieId == m.Id).FirstOrDefault());
+                return movies;
             }
             catch (Exception ex)
             {
                 Log.Default.Error($"Error getting movies", ex);
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            }
-        }
-
-        [HttpGet("totalratings")]
-        public async Task<ActionResult<TotalRatings>> GetMovieTotalRatings(string movieId)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(movieId))
-                    return BadRequest();
-
-                if (!MovieHelper.ConvertIdToInt(movieId, out int idAsInt))
-                    return BadRequest();
-
-                TotalRatings totalRatings = await _moviesContext.Ratings.Where(r => r.MovieId == idAsInt).FirstOrDefaultAsync();
-                return totalRatings == null ? NotFound() : totalRatings;
-            }
-            catch (Exception ex)
-            {
-                Log.Default.Error($"Error GetMovieTotalRatings for movie {movieId}", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }

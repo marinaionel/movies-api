@@ -42,5 +42,7 @@ namespace MoviesApi.Core.Models
         public ICollection<Chart> Charts { get; set; }
         public string Runtime { get; set; }
         public string Plot { get; set; }
+        [NotMapped]
+        public TotalRatings Ratings { get; set; }
     }
 }

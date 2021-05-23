@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MoviesApi.Common;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
+using MoviesApi.DataFillers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,11 @@ namespace MoviesApi.Controllers
     public class ChartController : ControllerBase
     {
         private MoviesContext _moviesContext;
-        public ChartController(MoviesContext moviesContext)
+        private MovieFiller _movieFiller;
+        public ChartController(MoviesContext moviesContext, MovieFiller movieFiller)
         {
             _moviesContext = moviesContext;
+            _movieFiller = movieFiller;
         }
 
         [HttpGet("all")]
@@ -27,14 +30,14 @@ namespace MoviesApi.Controllers
             try
             {
                 return await _moviesContext.Charts
-                                           .Include(c => c.Movies)
-                                           .ThenInclude(c => c.Genres)
-                                           .Include(c => c.Movies)
-                                           .ThenInclude(c => c.Directors)
-                                           .Skip(offset)
-                                           .Take(max)
-                                           .AsNoTracking()
-                                           .ToListAsync();
+                                            .Include(c => c.Movies)
+                                            .ThenInclude(c => c.Genres)
+                                            .Include(c => c.Movies)
+                                            .ThenInclude(c => c.Directors)
+                                            .Skip(offset)
+                                            .Take(max)
+                                            .AsNoTracking()
+                                            .ToListAsync();
             }
             catch (Exception ex)
             {
@@ -56,6 +59,9 @@ namespace MoviesApi.Controllers
                                                    .ThenInclude(c => c.Directors)
                                                    .AsNoTracking()
                                                    .FirstOrDefaultAsync();
+
+                //chart.Movies.Distinct()
+                //            .ForEach(m => _movieFiller.FillMoviePosterUrl(m, _moviesContext));
 
                 return chart == null ? NotFound() : chart;
             }

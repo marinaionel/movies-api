@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MoviesApi.ApiClient.AzureFunctions
 {
-    public class GetTrailerClient
+    public class YoutubeClient
     {
         private const string apiLink = "https://get-trailer-from-youtube-api.azurewebsites.net/api/get-trailer-from-youtube?code=zijLO/nCkZsXhsAcaXjwGRBagifTM7pGpU1Xcm85FRt9UqxE94vEWw==&search={0}";
         public async Task<string> GetTrailer(string search)

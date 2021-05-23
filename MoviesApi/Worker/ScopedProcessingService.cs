@@ -15,9 +15,9 @@ namespace MoviesApi.Worker
     {
         private const string Unknown = "N/A";
         private MoviesContext _moviesContext;
-        private OMDBbServiceClient _oMDBbServiceClient;
+        private OMDBbClient _oMDBbServiceClient;
 
-        public ScopedProcessingService(MoviesContext moviesContext, OMDBbServiceClient oMDBbServiceClient)
+        public ScopedProcessingService(MoviesContext moviesContext, OMDBbClient oMDBbServiceClient)
         {
             _moviesContext = moviesContext;
             _oMDBbServiceClient = oMDBbServiceClient;
