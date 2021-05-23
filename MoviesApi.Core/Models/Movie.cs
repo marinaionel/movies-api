@@ -1,5 +1,4 @@
 ﻿using MoviesApi.Core.Helpers;
-using MoviesApi.Core.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MoviesApi.Core.Models
 {
-    public class Movie : ISearchable
+    public class Movie
     {
         public Movie()
         {
@@ -26,9 +25,6 @@ namespace MoviesApi.Core.Models
         public long? Year { get; set; }
         [NotMapped]
         public string IdString { get => MovieHelper.ConvertIdToString(Id); }
-        [NotMapped]
-        [JsonIgnore]
-        public string SearchString { get => string.Join(',', Title); }
         public string BoxOffice { get; set; }
         public DateTime? ReleaseDate { get; set; }
         public string PosterUrl { get; set; }
