@@ -40,7 +40,7 @@ namespace MoviesApi
             {
                 opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 opt.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                opt.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto;
+                opt.SerializerSettings.TypeNameHandling = TypeNameHandling.None;
                 opt.SerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
                 opt.SerializerSettings.Formatting = Formatting.None;
             });

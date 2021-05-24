@@ -20,35 +20,34 @@ namespace MoviesApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<object>> Search(string q, EntityType? type)
+        public ActionResult<HashSet<object>> Search(string q, EntityType type = EntityType.Movie, int max = 100, int offset = 0)
         {
             try
             {
-                List<object> results = new();
                 if (string.IsNullOrWhiteSpace(q))
-                    return results;
+                    return null;
 
                 q = q.ToLower().Trim();
 
-                if (type == null)
+                switch (type)
                 {
-                    results.AddRange(_moviesContext.Movies.Where(m => m.Title.ToLower().Contains(q)));
-                    results.AddRange(_moviesContext.People.Where(p => p.Name.ToLower().Contains(q)));
+                    case EntityType.CrewMember:
+                        return _moviesContext.People.Where(p => p.Name.ToLower().Contains(q))
+                                                      .OrderBy(p => p.Id)
+                                                      .Skip(offset)
+                                                      .Take(max)
+                                                      .Select(m => (object)m)
+                                                      .ToHashSet();
+                    case EntityType.Movie:
+                        return _moviesContext.Movies.Where(m => m.Title.ToLower().Contains(q))
+                                                      .OrderBy(m => m.Id)
+                                                      .Skip(offset)
+                                                      .Take(max)
+                                                      .Select(m => (object)m)
+                                                      .ToHashSet();
+                    default:
+                        return null;
                 }
-                else
-                {
-                    switch (type)
-                    {
-                        case EntityType.CrewMember:
-                            results.AddRange(_moviesContext.People.Where(p => p.Name.ToLower().Contains(q)));
-                            break;
-                        case EntityType.Movie:
-                            results.AddRange(_moviesContext.Movies.Where(m => m.Title.ToLower().Contains(q)));
-                            break;
-                    }
-                }
-
-                return results;
             }
             catch (Exception ex)
             {
