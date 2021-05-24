@@ -10,15 +10,6 @@ namespace MoviesApi.Core.Models
 {
     public class Movie
     {
-        public Movie()
-        {
-            Actors = new HashSet<Person>();
-            Genres = new HashSet<Genre>();
-            Directors = new HashSet<Person>();
-            Charts = new HashSet<Chart>();
-            Countries = new HashSet<Country>();
-        }
-
         [JsonIgnore]
         public int Id { get; set; }
         public string Title { get; set; }
@@ -29,13 +20,13 @@ namespace MoviesApi.Core.Models
         public DateTime? ReleaseDate { get; set; }
         public string PosterUrl { get; set; }
         public string TrailerYoutubeVideoId { get; set; }
-        public ICollection<Person> Actors { get; set; }
-        public ICollection<Genre> Genres { get; set; }
-        public ICollection<Person> Directors { get; set; }
-        public ICollection<Language> Languages { get; set; }
-        public ICollection<Country> Countries { get; set; }
+        public ICollection<Person> Actors { get; set; } = new HashSet<Person>();
+        public ICollection<Genre> Genres { get; set; } = new HashSet<Genre>();
+        public ICollection<Person> Directors { get; set; } = new HashSet<Person>();
+        public ICollection<Language> Languages { get; set; } = new HashSet<Language>();
+        public ICollection<Country> Countries { get; set; } = new HashSet<Country>();
         [JsonIgnore]
-        public ICollection<Chart> Charts { get; set; }
+        public ICollection<Chart> Charts { get; set; } = new HashSet<Chart>();
         public string Runtime { get; set; }
         public string Plot { get; set; }
         [NotMapped]

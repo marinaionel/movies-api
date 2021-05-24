@@ -72,7 +72,7 @@ namespace MoviesApi.Controllers
                                                            .Take(max)
                                                            .AsNoTracking()
                                                            .ToListAsync();
-                movies.ForEach(m => m.Ratings = _moviesContext.TotalRatings.Where(r => r.MovieId == m.Id).FirstOrDefault());
+                movies.ForEach(m => m.Ratings = _moviesContext.TotalRatings.FirstOrDefault(r => r.MovieId == m.Id));
                 return movies;
             }
             catch (Exception ex)
