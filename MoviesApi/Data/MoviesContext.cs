@@ -103,7 +103,7 @@ namespace MoviesApi.Data
                       .HasColumnName("birth");
 
                 entity.Property(e => e.Name)
-                      .HasColumnType("text")
+                      .HasColumnType("nvarchar(max)")
                       .HasColumnName("name");
 
                 entity.Property(e => e.ImageUrl)
@@ -151,7 +151,7 @@ namespace MoviesApi.Data
                       .HasColumnName("id");
 
                 entity.Property(e => e.Title)
-                      .HasColumnType("text")
+                      .HasColumnType("nvarchar(max)")
                       .HasColumnName("title");
 
                 entity.Property(e => e.Year)
