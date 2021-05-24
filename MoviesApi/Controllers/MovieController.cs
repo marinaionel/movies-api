@@ -77,7 +77,7 @@ namespace MoviesApi.Controllers
             }
             catch (Exception ex)
             {
-                Log.Default.Error($"Error getting movies", ex);
+                Log.Default.Error("Error getting movies", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }

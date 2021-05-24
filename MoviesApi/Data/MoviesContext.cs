@@ -74,6 +74,23 @@ namespace MoviesApi.Data
                             .HasForeignKey("account_id")
                             .HasConstraintName("watchlist_accounts_id_fk")
                             .OnDelete(DeleteBehavior.ClientCascade));
+
+                entity.HasMany(m => m.FavouritePeople)
+                    .WithMany(p => p.Fans)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "fans",
+                        a => a
+                            .HasOne<Person>()
+                            .WithMany()
+                            .HasForeignKey("person_id")
+                            .HasConstraintName("fans_people_id_fk")
+                            .OnDelete(DeleteBehavior.Cascade),
+                        m => m
+                            .HasOne<Account>()
+                            .WithMany()
+                            .HasForeignKey("account_id")
+                            .HasConstraintName("fans_accounts_id_fk")
+                            .OnDelete(DeleteBehavior.ClientCascade));
             });
 
             modelBuilder.Entity<Review>(entity =>

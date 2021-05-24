@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 #nullable disable
 
@@ -13,5 +14,7 @@ namespace MoviesApi.Core.Models
         public string Description { get; set; }
         public ICollection<Movie> DirectedMovies { get; set; } = new HashSet<Movie>();
         public ICollection<Movie> ActedInMovies { get; set; } = new HashSet<Movie>();
+        [JsonIgnore]
+        public ICollection<Account> Fans { get; set; } = new HashSet<Account>();
     }
 }

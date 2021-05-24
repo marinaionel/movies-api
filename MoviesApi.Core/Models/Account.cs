@@ -7,6 +7,7 @@ namespace MoviesApi.Core.Models
     public class Account
     {
         public ICollection<Movie> Watchlist { get; set; } = new HashSet<Movie>();
+        public ICollection<Person> FavouritePeople { get; set; } = new HashSet<Person>();
         public int Id { get; set; }
         public string Email { get; set; }
         public string Name { get; set; }
