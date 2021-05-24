@@ -58,7 +58,35 @@ namespace MoviesApi.Controllers
             }
             catch (Exception ex)
             {
-                Log.Default.Error("Error adding to watchlist", ex);
+                Log.Default.Error("Error removing from watchlist", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPost("AddToFavouriteList")]
+        public ActionResult AddToFavouriteList(string actorId)
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Log.Default.Error("Error adding to favourite actors list", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPost("RemoveFromFavouriteList")]
+        public ActionResult RemoveFromFavouriteList(string actorId)
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Log.Default.Error("Error removing from favourite actors list", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
