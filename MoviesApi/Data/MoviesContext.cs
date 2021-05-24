@@ -296,7 +296,7 @@ namespace MoviesApi.Data
 
             modelBuilder.Entity<TotalRatings>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.MovieId);
 
                 entity.ToTable("ratings", Schema);
 
