@@ -1,10 +1,14 @@
-﻿namespace MoviesApi.Core.Models
+﻿using Newtonsoft.Json;
+
+namespace MoviesApi.Core.Models
 {
     public class Review
     {
         public int MovieId { get; set; }
+        [JsonIgnore]
         public Movie Movie { get; set; }
         public int AccountId { get; set; }
+        [JsonIgnore]
         public Account Account { get; set; }
         public string Title { get; set; }
         public string Text { get; set; }
