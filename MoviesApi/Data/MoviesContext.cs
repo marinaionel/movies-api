@@ -8,7 +8,9 @@ namespace MoviesApi.Data
     {
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Person> People { get; set; }
-        public DbSet<TotalRatings> Ratings { get; set; }
+        public DbSet<TotalRatings> TotalRatings { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<Account> Accounts { get; set; }
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Chart> Charts { get; set; }
         public DbSet<Language> Languages { get; set; }
@@ -32,6 +34,55 @@ namespace MoviesApi.Data
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
             modelBuilder.HasDefaultSchema(Schema);
+
+            modelBuilder.Entity<Account>(entity =>
+            {
+                entity.ToTable("accounts", Schema);
+
+                entity.HasIndex(e => e.Id)
+                      .IsUnique();
+
+                entity.Property(e => e.Id)
+                      .ValueGeneratedOnAdd()
+                      .HasColumnName("id");
+
+                entity.Property(e => e.Birthday)
+                      .HasColumnName("birthday")
+                      .HasColumnType("date");
+
+                entity.Property(e => e.Name)
+                      .HasColumnName("name")
+                      .HasColumnType("nvarchar(80)");
+
+                entity.Property(e => e.Email)
+                      .HasColumnName("email")
+                      .HasColumnType("nvarchar(100)");
+            });
+
+            modelBuilder.Entity<Review>(entity =>
+            {
+                entity.Property(e => e.Text)
+                      .HasColumnName("text");
+
+                entity.Property(e => e.Title)
+                      .HasColumnType("title");
+
+                entity.Property(e => e.Rating)
+                      .HasColumnName("rating");
+
+                entity.HasKey(e => new { e.MovieId, e.AccountId })
+                      .HasName("reviews_pk");
+
+                entity.HasOne(e => e.Account)
+                      .WithMany()
+                      .HasForeignKey(e => e.AccountId)
+                      .HasConstraintName("reviews_accounts_id_fk");
+
+                entity.HasOne(e => e.Movie)
+                      .WithMany()
+                      .HasForeignKey(e => e.MovieId)
+                      .HasConstraintName("reviews_movies_id_fk");
+            });
 
             modelBuilder.Entity<Country>(entity =>
             {

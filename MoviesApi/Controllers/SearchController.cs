@@ -29,25 +29,22 @@ namespace MoviesApi.Controllers
 
                 q = q.ToLower().Trim();
 
-                switch (type)
+                return type switch
                 {
-                    case EntityType.CrewMember:
-                        return _moviesContext.People.Where(p => p.Name.ToLower().Contains(q))
-                                                      .OrderBy(p => p.Id)
-                                                      .Skip(offset)
-                                                      .Take(max)
-                                                      .Select(m => (object)m)
-                                                      .ToHashSet();
-                    case EntityType.Movie:
-                        return _moviesContext.Movies.Where(m => m.Title.ToLower().Contains(q))
-                                                      .OrderBy(m => m.Id)
-                                                      .Skip(offset)
-                                                      .Take(max)
-                                                      .Select(m => (object)m)
-                                                      .ToHashSet();
-                    default:
-                        return null;
-                }
+                    EntityType.CrewMember => _moviesContext.People.Where(p => p.Name.ToLower().Contains(q))
+                        .OrderBy(p => p.Id)
+                        .Skip(offset)
+                        .Take(max)
+                        .Select(m => (object)m)
+                        .ToHashSet(),
+                    EntityType.Movie => _moviesContext.Movies.Where(m => m.Title.ToLower().Contains(q))
+                        .OrderBy(m => m.Id)
+                        .Skip(offset)
+                        .Take(max)
+                        .Select(m => (object)m)
+                        .ToHashSet(),
+                    _ => null
+                };
             }
             catch (Exception ex)
             {

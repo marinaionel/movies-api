@@ -48,7 +48,7 @@ namespace MoviesApi.Controllers
 
                 if (m == null) return NotFound();
                 await _movieFiller.FillMovie(m, _moviesContext);
-                m.Ratings = await _moviesContext.Ratings.Where(r => r.MovieId == m.Id).FirstOrDefaultAsync();
+                m.Ratings = await _moviesContext.TotalRatings.Where(r => r.MovieId == m.Id).FirstOrDefaultAsync();
                 return m;
             }
             catch (Exception ex)
@@ -72,7 +72,7 @@ namespace MoviesApi.Controllers
                                                            .Take(max)
                                                            .AsNoTracking()
                                                            .ToListAsync();
-                movies.ForEach(m => m.Ratings = _moviesContext.Ratings.Where(r => r.MovieId == m.Id).FirstOrDefault());
+                movies.ForEach(m => m.Ratings = _moviesContext.TotalRatings.Where(r => r.MovieId == m.Id).FirstOrDefault());
                 return movies;
             }
             catch (Exception ex)

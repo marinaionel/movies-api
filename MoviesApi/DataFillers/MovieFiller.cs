@@ -36,9 +36,7 @@ namespace MoviesApi.DataFillers
                                                         .FirstOrDefaultAsync();
                 if (movie == null) return;
                 if (!string.IsNullOrEmpty(movie.PosterUrl)) return;
-                string posterUrl = await _omdbClient.GetPosterUrl(movie.IdString);
-                if (posterUrl == null)
-                    posterUrl = await _quantClient.GetImageUrl($"{movie.Title} {movie.Year} movie poster");
+                string posterUrl = await _omdbClient.GetPosterUrl(movie.IdString) ?? await _quantClient.GetImageUrl($"{movie.Title} {movie.Year} movie poster");
                 if (posterUrl == null) return;
                 movie.PosterUrl = posterUrl;
                 await moviesContext.SaveChangesAsync();
@@ -96,7 +94,7 @@ namespace MoviesApi.DataFillers
                         await moviesContext.Countries.AddAsync(country);
                         trackedMovie.Countries.Add(country);
                     }
-                    else if (!fullMovie.Countries.Any(l => l.Id == existingCountry.Id))
+                    else if (fullMovie.Countries.All(l => l.Id != existingCountry.Id))
                         trackedMovie.Countries.Add(existingCountry);
                 }
                 await moviesContext.SaveChangesAsync();
@@ -116,7 +114,7 @@ namespace MoviesApi.DataFillers
                         await moviesContext.Languages.AddAsync(language);
                         trackedMovie.Languages.Add(language);
                     }
-                    else if (!fullMovie.Languages.Any(l => l.Id == existingLanguage.Id))
+                    else if (fullMovie.Languages.All(l => l.Id != existingLanguage.Id))
                         trackedMovie.Languages.Add(existingLanguage);
                 }
                 await moviesContext.SaveChangesAsync();
@@ -137,7 +135,7 @@ namespace MoviesApi.DataFillers
                         await moviesContext.Genres.AddAsync(genre);
                         trackedMovie.Genres.Add(genre);
                     }
-                    else if (!fullMovie.Genres.Any(g => g.Id == existingGenre.Id))
+                    else if (fullMovie.Genres.All(g => g.Id != existingGenre.Id))
                         trackedMovie.Genres.Add(existingGenre);
                 }
                 await moviesContext.SaveChangesAsync();

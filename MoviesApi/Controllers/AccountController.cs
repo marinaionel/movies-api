@@ -1,6 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using MoviesApi.Common;
 using MoviesApi.Core.Models;
-using System.Collections.Generic;
+using MoviesApi.Data;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MoviesApi.Controllers
 {
@@ -8,10 +13,25 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        [HttpGet("GetReviews")]
-        public List<Review> GetReviews(string userId, int max, int offset)
+        private MoviesContext _moviesContext;
+        public AccountController(MoviesContext moviesContext)
         {
-            return null;
+            _moviesContext = moviesContext;
+        }
+
+        [HttpGet("GetReviews")]
+        public async Task<ActionResult<IQueryable<Review>>> GetReviews(int userId, int max, int offset)
+        {
+            try
+            {
+                // return _moviesContext.Reviews.Where(r => r.AccountId == userId);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Log.Default.Error($"Error getting reviews for user {userId}", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
     }
 }
