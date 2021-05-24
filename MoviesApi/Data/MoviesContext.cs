@@ -57,6 +57,23 @@ namespace MoviesApi.Data
                 entity.Property(e => e.Email)
                       .HasColumnName("email")
                       .HasColumnType("nvarchar(100)");
+
+                entity.HasMany(m => m.Watchlist)
+                    .WithMany(p => p.Watchers)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "watchlist",
+                        a => a
+                            .HasOne<Movie>()
+                            .WithMany()
+                            .HasForeignKey("movie_id")
+                            .HasConstraintName("watchlist_movies_id_fk")
+                            .OnDelete(DeleteBehavior.Cascade),
+                        m => m
+                            .HasOne<Account>()
+                            .WithMany()
+                            .HasForeignKey("account_id")
+                            .HasConstraintName("watchlist_accounts_id_fk")
+                            .OnDelete(DeleteBehavior.ClientCascade));
             });
 
             modelBuilder.Entity<Review>(entity =>

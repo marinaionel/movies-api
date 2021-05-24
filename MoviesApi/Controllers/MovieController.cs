@@ -83,11 +83,27 @@ namespace MoviesApi.Controllers
         }
 
         [HttpGet("reviews")]
-        public async Task<ActionResult<IEnumerable<Review>>> GetReviews(string movieId, int max, int offset)
+        public ActionResult<ICollection<Review>> GetReviews(string movieId, int max = 100, int offset = 0)
         {
             try
             {
-                return null;
+                if (!MovieHelper.ConvertIdToInt(movieId, out int idAsInt))
+                    return BadRequest();
+
+                HashSet<Review> reviews = _moviesContext.Reviews.Where(r => r.MovieId == idAsInt)
+                                                                .OrderByDescending(r => r.Rating)
+                                                                .Skip(offset)
+                                                                .Take(max)
+                                                                .ToHashSet();
+
+                foreach (Review review in reviews.Where(review => review?.Account != null))
+                {
+                    review.Account.Birthday = DateTime.Now;
+                    review.Account.Email = null;
+                    review.Account.Watchlist = null;
+                }
+
+                return reviews;
             }
             catch (Exception ex)
             {

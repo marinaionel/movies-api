@@ -1,5 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MoviesApi.Common;
+using MoviesApi.Core.Helpers;
 using MoviesApi.Core.Models;
+using MoviesApi.Data;
+using System;
+using System.Threading.Tasks;
 
 namespace MoviesApi.Controllers
 {
@@ -7,27 +14,74 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class ReviewController : ControllerBase
     {
-        [HttpGet("GetReview")]
-        public Review GetReview(string id)
+        private MoviesContext _moviesContext;
+        public ReviewController(MoviesContext moviesContext)
         {
-            return null;
+            _moviesContext = moviesContext;
         }
 
-        [HttpPut("review")]
-        public void PutReview(Review review)
+        [HttpGet("GetReview")]
+        public async Task<ActionResult<Review>> GetReview(int userId, string movieId)
         {
+            try
+            {
+                if (MovieHelper.ConvertIdToInt(movieId, out int idAsInt))
+                    return BadRequest();
 
+                Review review = await _moviesContext.Reviews.FirstOrDefaultAsync(r => r.AccountId == userId && r.MovieId == idAsInt);
+                return (ActionResult<Review>)review ?? NotFound();
+            }
+            catch (Exception ex)
+            {
+                Log.Default.Error($"Error getting review for movie {movieId} by user {userId}", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpPost("review")]
-        public void PostReview(Review review)
+        public async Task<ActionResult> PostReview(Review review)
         {
+            try
+            {
+                if (review == null) return BadRequest();
+                if (review.MovieId == 0) return BadRequest();
 
+                //TODO
+                //if (review.AccountId==0) set the account id as the id of the current user
+
+                _moviesContext.Reviews.Update(review);
+                await _moviesContext.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Log.Default.Error($"Error posting review {review}", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
-        [HttpDelete("review")]
-        public void deleteReview(Review review)
-        {
 
+        [HttpDelete("review")]
+        public async Task<ActionResult> DeleteReview(int userId, string movieId)
+        {
+            try
+            {
+                if (MovieHelper.ConvertIdToInt(movieId, out int idAsInt))
+                    return BadRequest();
+
+                Review review = await _moviesContext.Reviews.FirstOrDefaultAsync(r => r.AccountId == userId && r.MovieId == idAsInt);
+
+                if (review == null)
+                    return BadRequest();
+
+                _moviesContext.Reviews.Remove(review);
+                await _moviesContext.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Log.Default.Error($"Error deleting review for movie {movieId} by user {userId}", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
     }
 }

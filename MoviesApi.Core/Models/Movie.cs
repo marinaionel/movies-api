@@ -26,6 +26,8 @@ namespace MoviesApi.Core.Models
         public ICollection<Language> Languages { get; set; } = new HashSet<Language>();
         public ICollection<Country> Countries { get; set; } = new HashSet<Country>();
         [JsonIgnore]
+        public ICollection<Account> Watchers { get; set; } = new HashSet<Account>();
+        [JsonIgnore]
         public ICollection<Chart> Charts { get; set; } = new HashSet<Chart>();
         public string Runtime { get; set; }
         public string Plot { get; set; }

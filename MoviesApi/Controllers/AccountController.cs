@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace MoviesApi.Controllers
 {
+    [RequireHttps]
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
@@ -30,6 +31,34 @@ namespace MoviesApi.Controllers
             catch (Exception ex)
             {
                 Log.Default.Error($"Error getting reviews for user {userId}", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPost("AddToWatchList")]
+        public ActionResult AddToWatchList(string movieId)
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Log.Default.Error("Error adding to watchlist", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPost("RemoveFromWatchList")]
+        public ActionResult RemoveFromWatchList(string movieId)
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Log.Default.Error("Error adding to watchlist", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
