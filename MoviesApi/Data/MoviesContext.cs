@@ -39,12 +39,11 @@ namespace MoviesApi.Data
             {
                 entity.ToTable("accounts", Schema);
 
-                entity.HasIndex(e => e.Id)
-                      .IsUnique();
+                entity.HasKey(e => e.Id);
 
                 entity.Property(e => e.Id)
-                      .ValueGeneratedOnAdd()
-                      .HasColumnName("id");
+                      .HasColumnName("id")
+                      .HasColumnType("varchar(128)");
 
                 entity.Property(e => e.Birthday)
                       .HasColumnName("birthday")

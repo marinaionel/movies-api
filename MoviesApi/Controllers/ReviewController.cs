@@ -21,19 +21,19 @@ namespace MoviesApi.Controllers
         }
 
         [HttpGet("GetReview")]
-        public async Task<ActionResult<Review>> GetReview(int userId, string movieId)
+        public async Task<ActionResult<Review>> GetReview(string accountId, string movieId)
         {
             try
             {
                 if (MovieHelper.ConvertIdToInt(movieId, out int idAsInt))
                     return BadRequest();
 
-                Review review = await _moviesContext.Reviews.FirstOrDefaultAsync(r => r.AccountId == userId && r.MovieId == idAsInt);
+                Review review = await _moviesContext.Reviews.FirstOrDefaultAsync(r => r.AccountId == accountId && r.MovieId == idAsInt);
                 return (ActionResult<Review>)review ?? NotFound();
             }
             catch (Exception ex)
             {
-                Log.Default.Error($"Error getting review for movie {movieId} by user {userId}", ex);
+                Log.Default.Error($"Error getting review for movie {movieId} by user {accountId}", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
@@ -61,14 +61,14 @@ namespace MoviesApi.Controllers
         }
 
         [HttpDelete("review")]
-        public async Task<ActionResult> DeleteReview(int userId, string movieId)
+        public async Task<ActionResult> DeleteReview(string accountId, string movieId)
         {
             try
             {
                 if (MovieHelper.ConvertIdToInt(movieId, out int idAsInt))
                     return BadRequest();
 
-                Review review = await _moviesContext.Reviews.FirstOrDefaultAsync(r => r.AccountId == userId && r.MovieId == idAsInt);
+                Review review = await _moviesContext.Reviews.FirstOrDefaultAsync(r => r.AccountId == accountId && r.MovieId == idAsInt);
 
                 if (review == null)
                     return BadRequest();
@@ -79,7 +79,7 @@ namespace MoviesApi.Controllers
             }
             catch (Exception ex)
             {
-                Log.Default.Error($"Error deleting review for movie {movieId} by user {userId}", ex);
+                Log.Default.Error($"Error deleting review for movie {movieId} by user {accountId}", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }

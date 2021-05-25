@@ -17,13 +17,13 @@ namespace MoviesApi.DataFillers
     public class MovieFiller
     {
         private OMDBbClient _omdbClient;
-        private YoutubeClient _youtubeClient;
+        private YoutubeAzureFunctionClient _youtubeAzureFunctionClient;
         private QuantClient _quantClient;
 
-        public MovieFiller(YoutubeClient getTrailerClient, OMDBbClient oMDBbServiceClient, QuantClient quantClient)
+        public MovieFiller(YoutubeAzureFunctionClient getTrailerAzureFunctionClient, OMDBbClient oMDBbServiceClient, QuantClient quantClient)
         {
             _omdbClient = oMDBbServiceClient;
-            _youtubeClient = getTrailerClient;
+            _youtubeAzureFunctionClient = getTrailerAzureFunctionClient;
             _quantClient = quantClient;
         }
 
@@ -56,7 +56,7 @@ namespace MoviesApi.DataFillers
             if (trackedMovie == null) return;
 
             if (string.IsNullOrWhiteSpace(fullMovie.TrailerYoutubeVideoId))
-                trackedMovie.TrailerYoutubeVideoId = await _youtubeClient.GetTrailer($"{trackedMovie.Title} {trackedMovie.Year} trailer");
+                trackedMovie.TrailerYoutubeVideoId = await _youtubeAzureFunctionClient.GetTrailer($"{trackedMovie.Title} {trackedMovie.Year} trailer");
 
             MovieOmdb movieOmdb = await _omdbClient.GetMovie(fullMovie.IdString);
             if (movieOmdb == null) return;

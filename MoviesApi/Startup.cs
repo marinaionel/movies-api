@@ -76,7 +76,7 @@ namespace MoviesApi
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
 
             services.AddSingleton<OMDBbClient>();
-            services.AddSingleton<YoutubeClient>();
+            services.AddSingleton<YoutubeAzureFunctionClient>();
             services.AddSingleton<QuantClient>();
             services.AddSingleton<MovieFiller>();
             services.AddSingleton<PersonFiller>();
