@@ -101,10 +101,10 @@ namespace MoviesApi.Data
                       .HasColumnName("title");
 
                 entity.Property(e => e.AccountId)
-                    .HasColumnName("account_id");
+                      .HasColumnName("account_id");
 
                 entity.Property(e => e.MovieId)
-                    .HasColumnType("movie_id");
+                      .HasColumnType("movie_id");
 
                 entity.Property(e => e.Rating)
                       .HasColumnName("rating");
@@ -116,6 +116,8 @@ namespace MoviesApi.Data
                       .WithMany()
                       .HasForeignKey(e => e.AccountId)
                       .HasConstraintName("reviews_accounts_id_fk");
+
+                entity.ToTable("reviews");
             });
 
             modelBuilder.Entity<Country>(entity =>
@@ -245,7 +247,8 @@ namespace MoviesApi.Data
                 entity.HasMany(m => m.Reviews)
                       .WithOne(r => r.Movie)
                       .HasForeignKey(e => e.MovieId)
-                      .HasConstraintName("reviews_movies_id_fk");
+                      .HasConstraintName("reviews_movies_id_fk")
+                      .OnDelete(DeleteBehavior.ClientCascade);
 
                 entity.HasMany(m => m.Actors)
                       .WithMany(p => p.ActedInMovies)
