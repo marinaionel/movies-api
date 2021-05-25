@@ -49,11 +49,11 @@ namespace MoviesApi.Controllers
                                                      .FirstOrDefaultAsync();
                 if (m == null) return NotFound();
 
-                m.Reviews.ForEach(r =>
-                {
-                    r.Account.Birthday = null;
-                    r.Account.Email = null;
-                });
+                m.Reviews.Where(r => r?.Account != null).ForEach(r =>
+                    {
+                        r.Account.Birthday = null;
+                        r.Account.Email = null;
+                    });
 
                 await _movieFiller.FillMovie(m, _moviesContext);
                 m.Ratings = await _moviesContext.TotalRatings.Where(r => r.MovieId == m.Id).FirstOrDefaultAsync();
