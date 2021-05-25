@@ -104,7 +104,7 @@ namespace MoviesApi.Data
                       .HasColumnName("account_id");
 
                 entity.Property(e => e.MovieId)
-                      .HasColumnType("movie_id");
+                      .HasColumnName("movie_id");
 
                 entity.Property(e => e.Rating)
                       .HasColumnName("rating");
