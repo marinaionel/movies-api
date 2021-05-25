@@ -26,28 +26,22 @@ namespace MoviesApi.Controllers
         private string UserId => HttpContext.User.Claims.ToList().FirstOrDefault(x => x.Type == "USERID")?.Value;
 
         [HttpPost("register")]
-        public async Task<ActionResult> Register([FromBody] Account accountRequest)
+        public async Task<ActionResult> Register([FromBody] Account account)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(UserId))
                     return BadRequest();
 
-                if (accountRequest == null)
+                if (account == null)
                     return BadRequest();
 
                 if (_moviesContext.Accounts.Any(a => a.Id == UserId))
                     return BadRequest("Already registered");
 
-                Account newUser = new()
-                {
-                    Email = accountRequest.Email,
-                    Name = accountRequest.Name,
-                    Birthday = accountRequest.Birthday,
-                    Id = UserId
-                };
+                account.Id = UserId;
 
-                await _moviesContext.Accounts.AddAsync(newUser);
+                await _moviesContext.Accounts.AddAsync(account);
                 await _moviesContext.SaveChangesAsync();
                 return Ok();
             }

@@ -100,7 +100,6 @@ namespace MoviesApi.Controllers
                 {
                     review.Account.Birthday = DateTime.Now;
                     review.Account.Email = null;
-                    review.Account.Watchlist = null;
                 }
 
                 return reviews;
