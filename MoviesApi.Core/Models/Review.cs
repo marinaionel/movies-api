@@ -8,7 +8,6 @@ namespace MoviesApi.Core.Models
         [JsonIgnore]
         public Movie Movie { get; set; }
         public string AccountId { get; set; }
-        [JsonIgnore]
         public Account Account { get; set; }
         public string Title { get; set; }
         public string Text { get; set; }

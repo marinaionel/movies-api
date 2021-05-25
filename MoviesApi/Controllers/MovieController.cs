@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesApi.Common;
+using MoviesApi.Core.Extensions;
 using MoviesApi.Core.Helpers;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
@@ -46,8 +47,14 @@ namespace MoviesApi.Controllers
                                                      .Include(m => m.Reviews)
                                                      .AsNoTracking()
                                                      .FirstOrDefaultAsync();
-
                 if (m == null) return NotFound();
+
+                m.Reviews.ForEach(r =>
+                {
+                    r.Account.Birthday = null;
+                    r.Account.Email = null;
+                });
+
                 await _movieFiller.FillMovie(m, _moviesContext);
                 m.Ratings = await _moviesContext.TotalRatings.Where(r => r.MovieId == m.Id).FirstOrDefaultAsync();
                 return m;
