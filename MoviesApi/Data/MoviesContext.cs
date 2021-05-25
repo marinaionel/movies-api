@@ -98,10 +98,10 @@ namespace MoviesApi.Data
                       .HasColumnName("text");
 
                 entity.Property(e => e.Title)
-                      .HasColumnType("title");
+                      .HasColumnName("title");
 
                 entity.Property(e => e.AccountId)
-                    .HasColumnType("account_id");
+                    .HasColumnName("account_id");
 
                 entity.Property(e => e.MovieId)
                     .HasColumnType("movie_id");
