@@ -6,6 +6,7 @@ using MoviesApi.Core.Helpers;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MoviesApi.Controllers
@@ -14,6 +15,8 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class ReviewController : ControllerBase
     {
+        private string UserId => HttpContext.User.Claims.ToList().FirstOrDefault(x => x.Type == "USERID")?.Value;
+
         private MoviesContext _moviesContext;
         public ReviewController(MoviesContext moviesContext)
         {
@@ -43,11 +46,16 @@ namespace MoviesApi.Controllers
         {
             try
             {
-                if (review == null) return BadRequest();
-                if (review.MovieId == 0) return BadRequest();
+                if (review == null)
+                    return BadRequest();
 
-                //TODO
-                //if (review.AccountId==0) set the account id as the id of the current user
+                if (review.MovieId == 0)
+                    return BadRequest();
+
+                if (UserId == null)
+                    return BadRequest("User not authenticated");
+
+                review.AccountId = UserId;
 
                 _moviesContext.Reviews.Update(review);
                 await _moviesContext.SaveChangesAsync();
@@ -71,7 +79,10 @@ namespace MoviesApi.Controllers
                 Review review = await _moviesContext.Reviews.FirstOrDefaultAsync(r => r.AccountId == accountId && r.MovieId == idAsInt);
 
                 if (review == null)
-                    return BadRequest();
+                    return BadRequest("Review does not exist");
+
+                if (review.AccountId != UserId)
+                    return Unauthorized();
 
                 _moviesContext.Reviews.Remove(review);
                 await _moviesContext.SaveChangesAsync();

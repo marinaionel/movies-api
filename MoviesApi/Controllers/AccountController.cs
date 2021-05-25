@@ -17,13 +17,13 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+        private string UserId => HttpContext.User.Claims.ToList().FirstOrDefault(x => x.Type == "USERID")?.Value;
         private MoviesContext _moviesContext;
+
         public AccountController(MoviesContext moviesContext)
         {
             _moviesContext = moviesContext;
         }
-
-        private string UserId => HttpContext.User.Claims.ToList().FirstOrDefault(x => x.Type == "USERID")?.Value;
 
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] Account account)
