@@ -100,6 +100,12 @@ namespace MoviesApi.Data
                 entity.Property(e => e.Title)
                       .HasColumnType("title");
 
+                entity.Property(e => e.AccountId)
+                    .HasColumnType("account_id");
+
+                entity.Property(e => e.MovieId)
+                    .HasColumnType("movie_id");
+
                 entity.Property(e => e.Rating)
                       .HasColumnName("rating");
 
