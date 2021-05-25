@@ -81,6 +81,8 @@ namespace MoviesApi
             services.AddSingleton<MovieFiller>();
             services.AddSingleton<PersonFiller>();
 
+            services.AddHttpContextAccessor();
+
             //services.AddHostedService<DataFillingService>();
             //services.AddScoped<IScopedProcessingService, ScopedProcessingService>();
         }
