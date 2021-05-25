@@ -31,7 +31,7 @@ namespace MoviesApi.Controllers
             try
             {
                 if (string.IsNullOrWhiteSpace(UserId))
-                    return BadRequest();
+                    return Unauthorized();
 
                 if (account == null)
                     return BadRequest();
@@ -58,7 +58,7 @@ namespace MoviesApi.Controllers
             try
             {
                 if (string.IsNullOrWhiteSpace(UserId))
-                    return BadRequest();
+                    return Unauthorized();
 
                 if (accountRequest == null)
                     return BadRequest();
@@ -88,12 +88,12 @@ namespace MoviesApi.Controllers
             try
             {
                 if (string.IsNullOrWhiteSpace(UserId))
-                    return BadRequest();
+                    return Unauthorized();
 
                 Account existentAccount = await _moviesContext.Accounts.FirstOrDefaultAsync(a => a.Id == UserId);
 
                 if (existentAccount == null)
-                    return BadRequest();
+                    return Unauthorized("User not registered");
 
                 return existentAccount;
             }
@@ -125,10 +125,10 @@ namespace MoviesApi.Controllers
             try
             {
                 if (string.IsNullOrWhiteSpace(UserId))
-                    return BadRequest();
+                    return Unauthorized();
 
                 if (!_moviesContext.Accounts.Any(a => a.Id == UserId))
-                    return BadRequest("User not registered");
+                    return Unauthorized("User not registered");
 
                 if (movieIds == null || movieIds.Length == 0)
                     return BadRequest();
@@ -161,10 +161,10 @@ namespace MoviesApi.Controllers
             try
             {
                 if (string.IsNullOrWhiteSpace(UserId))
-                    return BadRequest();
+                    return Unauthorized();
 
                 if (!_moviesContext.Accounts.Any(a => a.Id == UserId))
-                    return BadRequest("User not registered");
+                    return Unauthorized("User not registered");
 
                 HashSet<Movie> watchlist = _moviesContext.Accounts
                     .Where(a => a.Id == UserId)
@@ -190,10 +190,10 @@ namespace MoviesApi.Controllers
             try
             {
                 if (string.IsNullOrWhiteSpace(UserId))
-                    return BadRequest();
+                    return Unauthorized();
 
                 if (!_moviesContext.Accounts.Any(a => a.Id == UserId))
-                    return BadRequest("User not registered");
+                    return Unauthorized("User not registered");
 
                 if (movieIds == null || movieIds.Length == 0)
                     return BadRequest();
@@ -226,10 +226,10 @@ namespace MoviesApi.Controllers
             try
             {
                 if (string.IsNullOrWhiteSpace(UserId))
-                    return BadRequest();
+                    return Unauthorized();
 
                 if (!_moviesContext.Accounts.Any(a => a.Id == UserId))
-                    return BadRequest("User not registered");
+                    return Unauthorized("User not registered");
 
                 if (personIds == null || personIds.Length == 0)
                     return BadRequest();
@@ -261,10 +261,10 @@ namespace MoviesApi.Controllers
             try
             {
                 if (string.IsNullOrWhiteSpace(UserId))
-                    return BadRequest();
+                    return Unauthorized();
 
                 if (!_moviesContext.Accounts.Any(a => a.Id == UserId))
-                    return BadRequest("User not registered");
+                    return Unauthorized("User not registered");
 
                 if (personIds == null || personIds.Length == 0)
                     return BadRequest();
