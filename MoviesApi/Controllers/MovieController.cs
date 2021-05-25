@@ -43,6 +43,7 @@ namespace MoviesApi.Controllers
                                                      .Include(m => m.Genres)
                                                      .Include(m => m.Languages)
                                                      .Include(m => m.Countries)
+                                                     .Include(m => m.Reviews)
                                                      .AsNoTracking()
                                                      .FirstOrDefaultAsync();
 
@@ -78,35 +79,6 @@ namespace MoviesApi.Controllers
             catch (Exception ex)
             {
                 Log.Default.Error("Error getting movies", ex);
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            }
-        }
-
-        [HttpGet("reviews")]
-        public ActionResult<ICollection<Review>> GetReviews(string movieId, int max = 100, int offset = 0)
-        {
-            try
-            {
-                if (!MovieHelper.ConvertIdToInt(movieId, out int idAsInt))
-                    return BadRequest();
-
-                HashSet<Review> reviews = _moviesContext.Reviews.Where(r => r.MovieId == idAsInt)
-                                                                .OrderByDescending(r => r.Rating)
-                                                                .Skip(offset)
-                                                                .Take(max)
-                                                                .ToHashSet();
-
-                foreach (Review review in reviews.Where(review => review?.Account != null))
-                {
-                    review.Account.Birthday = DateTime.Now;
-                    review.Account.Email = null;
-                }
-
-                return reviews;
-            }
-            catch (Exception ex)
-            {
-                Log.Default.Error($"Error getting reviews for movie {movieId}", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }

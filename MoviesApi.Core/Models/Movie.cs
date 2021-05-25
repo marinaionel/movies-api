@@ -25,6 +25,7 @@ namespace MoviesApi.Core.Models
         public ICollection<Person> Directors { get; set; } = new HashSet<Person>();
         public ICollection<Language> Languages { get; set; } = new HashSet<Language>();
         public ICollection<Country> Countries { get; set; } = new HashSet<Country>();
+        public ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
         [JsonIgnore]
         public ICollection<Account> Watchers { get; set; } = new HashSet<Account>();
         [JsonIgnore]

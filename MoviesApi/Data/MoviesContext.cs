@@ -110,11 +110,6 @@ namespace MoviesApi.Data
                       .WithMany()
                       .HasForeignKey(e => e.AccountId)
                       .HasConstraintName("reviews_accounts_id_fk");
-
-                entity.HasOne(e => e.Movie)
-                      .WithMany()
-                      .HasForeignKey(e => e.MovieId)
-                      .HasConstraintName("reviews_movies_id_fk");
             });
 
             modelBuilder.Entity<Country>(entity =>
@@ -240,6 +235,11 @@ namespace MoviesApi.Data
 
                 entity.Property(e => e.Year)
                       .HasColumnName("year");
+
+                entity.HasMany(m => m.Reviews)
+                      .WithOne(r => r.Movie)
+                      .HasForeignKey(e => e.MovieId)
+                      .HasConstraintName("reviews_movies_id_fk");
 
                 entity.HasMany(m => m.Actors)
                       .WithMany(p => p.ActedInMovies)
