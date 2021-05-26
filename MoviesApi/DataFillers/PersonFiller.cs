@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MoviesApi.ApiClient.ImageApi;
+using MoviesApi.ApiClient.QuantApi;
+using MoviesApi.ApiClient.TMDbApi;
 using MoviesApi.Common;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
@@ -11,11 +12,13 @@ namespace MoviesApi.DataFillers
 {
     public class PersonFiller
     {
-        private QuantClient _quantImageClient;
+        private TMDbApiClient _tmDbApiClient;
+        private QuantClient _quantClient;
 
-        public PersonFiller(QuantClient quantImageClient)
+        public PersonFiller(TMDbApiClient tmDbApiClient, QuantClient quantClient)
         {
-            _quantImageClient = quantImageClient;
+            _tmDbApiClient = tmDbApiClient;
+            _quantClient = quantClient;
         }
 
         public async Task FillPerson(Person fullPerson, MoviesContext moviesContext)
@@ -23,16 +26,19 @@ namespace MoviesApi.DataFillers
             try
             {
                 if (fullPerson == null) return;
-                if (!string.IsNullOrWhiteSpace(fullPerson.ImageUrl)) return;
-                string imageUrl = await _quantImageClient.GetImageUrl(fullPerson.Name);
-                if (imageUrl == null) return;
+                int? tmdbPersonId = (await _tmDbApiClient.ApiClient.SearchPersonAsync(fullPerson.Name))?.Results.FirstOrDefault()?.Id;
+                if (tmdbPersonId == null) return;
+                TMDbLib.Objects.People.Person tmdbPerson = await _tmDbApiClient.ApiClient.GetPersonAsync((int)tmdbPersonId);
+                if (tmdbPerson == null) return;
                 Person trackedPerson = await moviesContext.People.Where(p => p.Id == fullPerson.Id)
                                                                  .AsTracking()
                                                                  .FirstOrDefaultAsync();
                 if (trackedPerson == null) return;
-                trackedPerson.ImageUrl = imageUrl;
+                trackedPerson.Birth ??= tmdbPerson.Birthday?.Year;
+                trackedPerson.ImageUrl ??= tmdbPerson.Images?.Profiles?.FirstOrDefault()?.FilePath ?? await _quantClient.GetImageUrl(fullPerson.Name);
+                if (!string.IsNullOrWhiteSpace(tmdbPerson.Biography))
+                    trackedPerson.Description ??= tmdbPerson.Biography.Replace("\u200B", "");
                 await moviesContext.SaveChangesAsync();
-                fullPerson.ImageUrl = imageUrl;
             }
             catch (Exception ex)
             {

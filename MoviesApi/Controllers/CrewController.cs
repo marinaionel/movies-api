@@ -26,15 +26,12 @@ namespace MoviesApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Person>> GetCrewMemberAsync(string id)
+        public async Task<ActionResult<Person>> GetCrewMemberAsync(int id)
         {
             try
             {
-                if (!int.TryParse(id, out int idAsInt))
-                    return BadRequest();
-
                 Person person = await _moviesContext.People
-                                           .Where(p => p.Id == idAsInt)
+                                           .Where(p => p.Id == id)
                                            .Include(p => p.ActedInMovies)
                                            .ThenInclude(m => m.Genres)
                                            .Include(p => p.DirectedMovies)
@@ -53,20 +50,24 @@ namespace MoviesApi.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<ActionResult<List<Person>>> GetCrewMembersAsync(int max, int offset)
+        public async Task<ActionResult<ICollection<Person>>> GetCrewMembersAsync(int max = 100, int offset = 0)
         {
             try
             {
-                return await _moviesContext.People
-                                           .Include(p => p.ActedInMovies)
-                                           .ThenInclude(m => m.Genres)
-                                           .Include(p => p.DirectedMovies)
-                                           .AsNoTracking()
-                                           .ToListAsync();
+                HashSet<Person> people = _moviesContext.People
+                                                       .Include(p => p.ActedInMovies)
+                                                       .ThenInclude(m => m.Genres)
+                                                       .Include(p => p.DirectedMovies)
+                                                       .OrderBy(p => p.Id)
+                                                       .Skip(offset)
+                                                       .Take(max)
+                                                       .AsNoTracking()
+                                                       .ToHashSet();
+                return people;
             }
             catch (Exception ex)
             {
-                Log.Default.Error($"Error getting crew members", ex);
+                Log.Default.Error("Error getting crew members", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }

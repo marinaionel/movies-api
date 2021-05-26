@@ -9,8 +9,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MoviesApi.ApiClient.AzureFunctions;
-using MoviesApi.ApiClient.ImageApi;
-using MoviesApi.ApiClient.OMDbApi;
+using MoviesApi.ApiClient.QuantApi;
+using MoviesApi.ApiClient.TMDbApi;
 using MoviesApi.Data;
 using MoviesApi.DataFillers;
 using Newtonsoft.Json;
@@ -75,16 +75,13 @@ namespace MoviesApi
             });
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
 
-            services.AddSingleton<OMDBbClient>();
             services.AddSingleton<YoutubeAzureFunctionClient>();
             services.AddSingleton<QuantClient>();
             services.AddSingleton<MovieFiller>();
             services.AddSingleton<PersonFiller>();
+            services.AddSingleton<TMDbApiClient>();
 
             services.AddHttpContextAccessor();
-
-            //services.AddHostedService<DataFillingService>();
-            //services.AddScoped<IScopedProcessingService, ScopedProcessingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

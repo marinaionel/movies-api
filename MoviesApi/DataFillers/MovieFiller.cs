@@ -1,51 +1,28 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MoviesApi.ApiClient.AzureFunctions;
-using MoviesApi.ApiClient.ImageApi;
-using MoviesApi.ApiClient.OMDbApi;
-using MoviesApi.Common;
+using MoviesApi.ApiClient.TMDbApi;
 using MoviesApi.Core.Constants;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MovieOmdb = MoviesApi.Core.Models.OMDb.Movie;
+using TMDbLib.Objects.General;
+using TMDbLib.Objects.Movies;
+using Country = MoviesApi.Core.Models.Country;
+using Genre = MoviesApi.Core.Models.Genre;
+using Movie = MoviesApi.Core.Models.Movie;
 
 namespace MoviesApi.DataFillers
 {
     public class MovieFiller
     {
-        private OMDBbClient _omdbClient;
         private YoutubeAzureFunctionClient _youtubeAzureFunctionClient;
-        private QuantClient _quantClient;
-
-        public MovieFiller(YoutubeAzureFunctionClient getTrailerAzureFunctionClient, OMDBbClient oMDBbServiceClient, QuantClient quantClient)
+        private TMDbApiClient _tmDbApiClient;
+        public MovieFiller(YoutubeAzureFunctionClient getTrailerAzureFunctionClient, TMDbApiClient tmDbApiClient)
         {
-            _omdbClient = oMDBbServiceClient;
             _youtubeAzureFunctionClient = getTrailerAzureFunctionClient;
-            _quantClient = quantClient;
-        }
-
-        public async Task FillMoviePosterUrl(Movie movieParam, MoviesContext moviesContext)
-        {
-            try
-            {
-                Movie movie = await moviesContext.Movies.Where(m => m.Id == movieParam.Id)
-                                                        .AsTracking()
-                                                        .FirstOrDefaultAsync();
-                if (movie == null) return;
-                if (!string.IsNullOrEmpty(movie.PosterUrl)) return;
-                string posterUrl = await _omdbClient.GetPosterUrl(movie.IdString) ?? await _quantClient.GetImageUrl($"{movie.Title} {movie.Year} movie poster");
-                if (posterUrl == null) return;
-                movie.PosterUrl = posterUrl;
-                await moviesContext.SaveChangesAsync();
-                movieParam.PosterUrl = posterUrl;
-            }
-            catch (Exception ex)
-            {
-                Log.Default.Error($"Error in FillMoviePosterUrl movie {movieParam?.Id}", ex);
-            }
+            _tmDbApiClient = tmDbApiClient;
         }
 
         public async Task FillMovie(Movie fullMovie, MoviesContext moviesContext)
@@ -58,88 +35,60 @@ namespace MoviesApi.DataFillers
             if (string.IsNullOrWhiteSpace(fullMovie.TrailerYoutubeVideoId))
                 trackedMovie.TrailerYoutubeVideoId = await _youtubeAzureFunctionClient.GetTrailer($"{trackedMovie.Title} {trackedMovie.Year} trailer");
 
-            MovieOmdb movieOmdb = await _omdbClient.GetMovie(fullMovie.IdString);
-            if (movieOmdb == null) return;
+            TMDbLib.Objects.Movies.Movie tmdbMovie = await _tmDbApiClient.ApiClient.GetMovieAsync(fullMovie.IdString);
+            if (tmdbMovie == null) return;
 
-            if (fullMovie.PosterUrl == null || fullMovie.PosterUrl == Constants.Unknown)
-                if (!string.IsNullOrWhiteSpace(movieOmdb.Poster) && movieOmdb.Poster != Constants.Unknown)
-                    trackedMovie.PosterUrl = movieOmdb.Poster;
-                else
+            if (fullMovie.PosterUrl is null or Constants.Unknown)
+                trackedMovie.PosterUrl = $"https://image.tmdb.org/t/p/w500{tmdbMovie.PosterPath}";
+
+            trackedMovie.ReleaseDate ??= tmdbMovie.ReleaseDate;
+            trackedMovie.Runtime ??= $"{tmdbMovie.Runtime} min";
+            trackedMovie.BoxOffice ??= $"${tmdbMovie.Revenue:#,0}";
+            trackedMovie.Plot ??= tmdbMovie.Overview.Replace("\u200B", "");
+
+            foreach (ProductionCountry country in tmdbMovie.ProductionCountries)
+            {
+                Country existingCountry = await moviesContext.Countries.Where(c => string.Equals(c.Name, country.Name, StringComparison.CurrentCultureIgnoreCase))
+                                                                       .FirstOrDefaultAsync();
+                if (existingCountry == null)
                 {
-                    string posterUrl = await _quantClient.GetImageUrl($"{fullMovie.Title} {fullMovie.Year} movie poster");
-                    if (posterUrl != null)
-                        trackedMovie.PosterUrl = posterUrl;
+                    Country newCountry = new() { Name = country.Name };
+                    await moviesContext.Countries.AddAsync(newCountry);
+                    trackedMovie.Countries.Add(newCountry);
                 }
+                else if (fullMovie.Countries.All(l => l.Id != existingCountry.Id))
+                    trackedMovie.Countries.Add(existingCountry);
+            }
 
-            if (!string.IsNullOrWhiteSpace(movieOmdb.Released) && movieOmdb.Released != Constants.Unknown)
-                trackedMovie.ReleaseDate = DateTime.Parse(movieOmdb.Released);
+            foreach (SpokenLanguage language in tmdbMovie.SpokenLanguages)
+            {
+                Language existingLanguage = await moviesContext.Languages.Where(l => string.Equals(l.Name, language.Name, StringComparison.CurrentCultureIgnoreCase))
+                                                                         .FirstOrDefaultAsync();
+                if (existingLanguage == null)
+                {
+                    Language newLanguage = new() { Name = language.Name };
+                    await moviesContext.Languages.AddAsync(newLanguage);
+                    trackedMovie.Languages.Add(newLanguage);
+                }
+                else if (fullMovie.Languages.All(l => l.Id != existingLanguage.Id))
+                    trackedMovie.Languages.Add(existingLanguage);
+            }
 
-            trackedMovie.Runtime = movieOmdb.Runtime;
-            trackedMovie.BoxOffice = movieOmdb.BoxOffice;
-            trackedMovie.Plot = movieOmdb.Plot;
+            foreach (TMDbLib.Objects.General.Genre genre in tmdbMovie.Genres)
+            {
+                Genre existingGenre = await moviesContext.Genres.Where(g => string.Equals(g.Name.Trim(), genre.Name.Trim(), StringComparison.CurrentCultureIgnoreCase))
+                                                                .FirstOrDefaultAsync();
 
+                if (existingGenre == null)
+                {
+                    Genre newGenre = new() { Name = genre.Name };
+                    await moviesContext.Genres.AddAsync(newGenre);
+                    trackedMovie.Genres.Add(newGenre);
+                }
+                else if (fullMovie.Genres.All(g => g.Id != existingGenre.Id))
+                    trackedMovie.Genres.Add(existingGenre);
+            }
             await moviesContext.SaveChangesAsync();
-
-            if (!string.IsNullOrWhiteSpace(movieOmdb.Country) && movieOmdb.Country != Constants.Unknown)
-            {
-                List<Country> countriesList = movieOmdb.Country.Split(",", StringSplitOptions.RemoveEmptyEntries)
-                                                               .Select(c => new Country { Name = c.Trim() })
-                                                               .ToList();
-                foreach (Country country in countriesList)
-                {
-                    Country existingCountry = await moviesContext.Countries.Where(c => c.Name.ToLower() == country.Name.ToLower())
-                                                                           .FirstOrDefaultAsync();
-                    if (existingCountry == null)
-                    {
-                        await moviesContext.Countries.AddAsync(country);
-                        trackedMovie.Countries.Add(country);
-                    }
-                    else if (fullMovie.Countries.All(l => l.Id != existingCountry.Id))
-                        trackedMovie.Countries.Add(existingCountry);
-                }
-                await moviesContext.SaveChangesAsync();
-            }
-
-            if (!string.IsNullOrWhiteSpace(movieOmdb.Language) && movieOmdb.Language != Constants.Unknown)
-            {
-                List<Language> languagesList = movieOmdb.Language.Split(",", StringSplitOptions.RemoveEmptyEntries)
-                                                                 .Select(l => new Language { Name = l.Trim() })
-                                                                 .ToList();
-                foreach (Language language in languagesList)
-                {
-                    Language existingLanguage = await moviesContext.Languages.Where(l => l.Name.ToLower() == language.Name.ToLower())
-                                                                             .FirstOrDefaultAsync();
-                    if (existingLanguage == null)
-                    {
-                        await moviesContext.Languages.AddAsync(language);
-                        trackedMovie.Languages.Add(language);
-                    }
-                    else if (fullMovie.Languages.All(l => l.Id != existingLanguage.Id))
-                        trackedMovie.Languages.Add(existingLanguage);
-                }
-                await moviesContext.SaveChangesAsync();
-            }
-
-            if (!string.IsNullOrWhiteSpace(movieOmdb.Genre) && movieOmdb.Genre != Constants.Unknown)
-            {
-                List<Genre> genresList = movieOmdb.Genre.Split(",", StringSplitOptions.RemoveEmptyEntries)
-                                                        .Select(g => new Genre { Name = g.Trim() })
-                                                        .ToList();
-                foreach (Genre genre in genresList)
-                {
-                    Genre existingGenre = await moviesContext.Genres.Where(g => g.Name.Trim().ToLower() == genre.Name.Trim().ToLower())
-                                                                    .FirstOrDefaultAsync();
-
-                    if (existingGenre == null)
-                    {
-                        await moviesContext.Genres.AddAsync(genre);
-                        trackedMovie.Genres.Add(genre);
-                    }
-                    else if (fullMovie.Genres.All(g => g.Id != existingGenre.Id))
-                        trackedMovie.Genres.Add(existingGenre);
-                }
-                await moviesContext.SaveChangesAsync();
-            }
         }
     }
 }

@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Threading.Tasks;
 
-namespace MoviesApi.ApiClient.ImageApi
+namespace MoviesApi.ApiClient.QuantApi
 {
     public class QuantClient
     {
