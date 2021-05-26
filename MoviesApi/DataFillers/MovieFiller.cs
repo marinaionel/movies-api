@@ -4,7 +4,6 @@ using MoviesApi.ApiClient.TMDbApi;
 using MoviesApi.Core.Constants;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using TMDbLib.Objects.General;
@@ -48,11 +47,11 @@ namespace MoviesApi.DataFillers
 
             foreach (ProductionCountry country in tmdbMovie.ProductionCountries)
             {
-                Country existingCountry = await moviesContext.Countries.Where(c => string.Equals(c.Name, country.Name, StringComparison.CurrentCultureIgnoreCase))
+                Country existingCountry = await moviesContext.Countries.Where(c => c.Name.ToLower() == country.Name.ToLower())
                                                                        .FirstOrDefaultAsync();
                 if (existingCountry == null)
                 {
-                    Country newCountry = new() { Name = country.Name };
+                    Country newCountry = new() { Name = country.Name.Trim() };
                     await moviesContext.Countries.AddAsync(newCountry);
                     trackedMovie.Countries.Add(newCountry);
                 }
@@ -62,11 +61,11 @@ namespace MoviesApi.DataFillers
 
             foreach (SpokenLanguage language in tmdbMovie.SpokenLanguages)
             {
-                Language existingLanguage = await moviesContext.Languages.Where(l => string.Equals(l.Name, language.Name, StringComparison.CurrentCultureIgnoreCase))
+                Language existingLanguage = await moviesContext.Languages.Where(l => l.Name.ToLower() == language.Name.ToLower())
                                                                          .FirstOrDefaultAsync();
                 if (existingLanguage == null)
                 {
-                    Language newLanguage = new() { Name = language.Name };
+                    Language newLanguage = new() { Name = language.Name.Trim() };
                     await moviesContext.Languages.AddAsync(newLanguage);
                     trackedMovie.Languages.Add(newLanguage);
                 }
@@ -76,12 +75,12 @@ namespace MoviesApi.DataFillers
 
             foreach (TMDbLib.Objects.General.Genre genre in tmdbMovie.Genres)
             {
-                Genre existingGenre = await moviesContext.Genres.Where(g => string.Equals(g.Name.Trim(), genre.Name.Trim(), StringComparison.CurrentCultureIgnoreCase))
+                Genre existingGenre = await moviesContext.Genres.Where(g => g.Name.Trim().ToLower() == genre.Name.Trim().ToLower())
                                                                 .FirstOrDefaultAsync();
 
                 if (existingGenre == null)
                 {
-                    Genre newGenre = new() { Name = genre.Name };
+                    Genre newGenre = new() { Name = genre.Name.Trim() };
                     await moviesContext.Genres.AddAsync(newGenre);
                     trackedMovie.Genres.Add(newGenre);
                 }
