@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using MoviesApi.Common;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
-using MoviesApi.DataFillers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +16,9 @@ namespace MoviesApi.Controllers
     public class ChartController : ControllerBase
     {
         private MoviesContext _moviesContext;
-        private MovieFiller _movieFiller;
-        public ChartController(MoviesContext moviesContext, MovieFiller movieFiller)
+        public ChartController(MoviesContext moviesContext)
         {
             _moviesContext = moviesContext;
-            _movieFiller = movieFiller;
         }
 
         [HttpGet("all")]
