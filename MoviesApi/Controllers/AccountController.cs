@@ -77,7 +77,7 @@ namespace MoviesApi.Controllers
             }
             catch (Exception ex)
             {
-                Log.Default.Error($"Error registering user {HttpContext.User.Claims.ToList().FirstOrDefault(x => x.Type == "USERID")?.Value}", ex);
+                Log.Default.Error($"Error registering user {UserId}", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
@@ -105,16 +105,24 @@ namespace MoviesApi.Controllers
         }
 
         [HttpGet("GetReviews")]
-        public async Task<ActionResult<IQueryable<Review>>> GetReviews(int userId, int max, int offset)
+        public ActionResult<ICollection<Review>> GetReviews(string accountId = null, int max = 100, int offset = 0)
         {
             try
             {
-                // return _moviesContext.Reviews.Where(r => r.AccountId == userId);
-                return null;
+                if (string.IsNullOrWhiteSpace(UserId))
+                    return Unauthorized();
+
+                accountId ??= UserId;
+
+                return _moviesContext.Reviews.Where(r => r.AccountId == accountId)
+                                             .AsNoTracking()
+                                             .Skip(offset)
+                                             .Take(max)
+                                             .ToHashSet();
             }
             catch (Exception ex)
             {
-                Log.Default.Error($"Error getting reviews for user {userId}", ex);
+                Log.Default.Error($"Error getting reviews for user {accountId}", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
