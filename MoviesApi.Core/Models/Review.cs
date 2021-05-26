@@ -19,7 +19,7 @@ namespace MoviesApi.Core.Models
             {
                 _rating = value switch
                 {
-                    > 5 => 5,
+                    > 10 => 10,
                     < 1 => 1,
                     _ => value
                 };
