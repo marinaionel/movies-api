@@ -34,6 +34,8 @@ namespace MoviesApi.Controllers
                                             .ThenInclude(c => c.Genres)
                                             .Include(c => c.Movies)
                                             .ThenInclude(c => c.Directors)
+                                            .Include(c => c.Movies)
+                                            .ThenInclude(m => m.Ratings)
                                             .Skip(offset)
                                             .Take(max)
                                             .AsNoTracking()
