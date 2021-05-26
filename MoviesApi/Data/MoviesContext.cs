@@ -334,6 +334,9 @@ namespace MoviesApi.Data
                             .HasForeignKey("movie_id")
                             .HasConstraintName("country_movie_movies_id_fk")
                             .OnDelete(DeleteBehavior.ClientCascade));
+
+                entity.HasOne(m => m.Ratings)
+                      .WithOne(r => r.Movie);
             });
 
             modelBuilder.Entity<TotalRatings>(entity =>
@@ -352,8 +355,7 @@ namespace MoviesApi.Data
                       .HasColumnName("votes");
 
                 entity.HasOne(d => d.Movie)
-                      .WithMany()
-                      .HasForeignKey(d => d.MovieId)
+                      .WithOne(m => m.Ratings)
                       .HasConstraintName("ratings_movies_id_fk");
             });
 

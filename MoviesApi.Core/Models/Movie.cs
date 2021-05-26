@@ -15,7 +15,8 @@ namespace MoviesApi.Core.Models
         public string Title { get; set; }
         public long? Year { get; set; }
         [NotMapped]
-        public string IdString { get => MovieHelper.ConvertIdToString(Id); }
+        public string IdString => MovieHelper.ConvertIdToString(Id);
+
         public string BoxOffice { get; set; }
         public DateTime? ReleaseDate { get; set; }
         public string PosterUrl { get; set; }
@@ -32,7 +33,6 @@ namespace MoviesApi.Core.Models
         public ICollection<Chart> Charts { get; set; } = new HashSet<Chart>();
         public string Runtime { get; set; }
         public string Plot { get; set; }
-        [NotMapped]
         public TotalRatings Ratings { get; set; }
     }
 }

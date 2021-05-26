@@ -22,25 +22,26 @@ namespace MoviesApi.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<ActionResult<List<Chart>>> GetChartsAsync(int max, int offset)
+        public ActionResult<ICollection<Chart>> GetChartsAsync(int max = 100, int offset = 0)
         {
             try
             {
-                return await _moviesContext.Charts
-                                            .Include(c => c.Movies)
-                                            .ThenInclude(c => c.Genres)
-                                            .Include(c => c.Movies)
-                                            .ThenInclude(c => c.Directors)
-                                            .Include(c => c.Movies)
-                                            .ThenInclude(m => m.Ratings)
-                                            .Skip(offset)
-                                            .Take(max)
-                                            .AsNoTracking()
-                                            .ToListAsync();
+                return _moviesContext.Charts
+                                     .Include(c => c.Movies)
+                                     .ThenInclude(c => c.Genres)
+                                     .Include(c => c.Movies)
+                                     .ThenInclude(c => c.Directors)
+                                     .Include(c => c.Movies)
+                                     .ThenInclude(c => c.Ratings)
+                                     .OrderBy(c => c.Id)
+                                     .Skip(offset)
+                                     .Take(max)
+                                     .AsNoTracking()
+                                     .ToHashSet();
             }
             catch (Exception ex)
             {
-                Log.Default.Error($"Error getting charts", ex);
+                Log.Default.Error("Error getting charts", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
