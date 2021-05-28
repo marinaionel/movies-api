@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesApi.Common;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace MoviesApi.Controllers
 {
+    [Authorize]
     [RequireHttps]
     [Route("api/[controller]")]
     [ApiController]
