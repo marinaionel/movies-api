@@ -45,6 +45,7 @@ namespace MoviesApi.Controllers
                                                      .Include(m => m.Languages)
                                                      .Include(m => m.Countries)
                                                      .Include(m => m.Reviews)
+                                                     .ThenInclude(m => m.Account)
                                                      .AsNoTracking()
                                                      .FirstOrDefaultAsync();
                 if (m == null) return NotFound();
