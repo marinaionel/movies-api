@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesApi.Common;
+using MoviesApi.Core.Constants;
 using MoviesApi.Core.Helpers;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
@@ -19,7 +20,7 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private string UserId => HttpContext.User.Claims.ToList().FirstOrDefault(x => x.Type == "USERID")?.Value;
+        private string UserId => HttpContext.User.Claims.ToList().FirstOrDefault(x => x.Type == Constants.UserId)?.Value;
         private MoviesContext _moviesContext;
 
         public AccountController(MoviesContext moviesContext)
