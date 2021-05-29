@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MoviesApi.ApiClient.AzureFunctions;
@@ -48,13 +49,13 @@ namespace MoviesApi
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
                     {
-                        options.Authority = "https://securetoken.google.com/1:475689474726:web:2894f95c246ccbe3963267";
+                        options.Authority = "https://securetoken.google.com/sep6-3e33f";
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateIssuer = true,
-                            ValidIssuer = "https://securetoken.google.com/1:475689474726:web:2894f95c246ccbe3963267",
+                            ValidIssuer = "https://securetoken.google.com/sep6-3e33f",
                             ValidateAudience = true,
-                            ValidAudience = "1:475689474726:web:2894f95c246ccbe3963267",
+                            ValidAudience = "sep6-3e33f",
                             ValidateLifetime = true
                         };
                     });
@@ -82,6 +83,7 @@ namespace MoviesApi
             services.AddSingleton<TMDbApiClient>();
 
             services.AddHttpContextAccessor();
+            IdentityModelEventSource.ShowPII = true;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
