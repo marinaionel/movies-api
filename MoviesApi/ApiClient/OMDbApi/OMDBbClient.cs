@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace MoviesApi.ApiClient.OMDbApi
 {
+    //not needed anymore as OMDb API was replaced by TMDb
+    [Obsolete]
     public class OMDBbClient
     {
         private IConfiguration _configuration;

@@ -1,5 +1,8 @@
-﻿namespace MoviesApi.Core.Models.OMDb
+﻿using System;
+
+namespace MoviesApi.Core.Models.OMDb
 {
+    [Obsolete]
     public class Rating
     {
         public string Source { get; set; }

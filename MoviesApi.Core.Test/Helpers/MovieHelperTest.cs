@@ -6,14 +6,6 @@ namespace MoviesApi.Core.Test.Helpers
     public class MovieHelperTest
     {
         [Test]
-        public void ConvertIdToString_Test()
-        {
-            Assert.AreEqual("tt0000135", MovieHelper.ConvertIdToString(135));
-            Assert.AreEqual("tt1287347", MovieHelper.ConvertIdToString(1287347));
-            Assert.AreEqual("tt0028782", MovieHelper.ConvertIdToString(28782));
-        }
-
-        [Test]
         public void ConvertIdToInt_TestSunny()
         {
             Assert.True(MovieHelper.ConvertIdToInt("tt0000135", out int i1));

@@ -1,5 +1,4 @@
-﻿using MoviesApi.Core.Helpers;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,7 +14,7 @@ namespace MoviesApi.Core.Models
         public string Title { get; set; }
         public long? Year { get; set; }
         [NotMapped]
-        public string IdString => MovieHelper.ConvertIdToString(Id);
+        public string IdString => "tt" + Id.ToString("0000000");
 
         public string BoxOffice { get; set; }
         public DateTime? ReleaseDate { get; set; }

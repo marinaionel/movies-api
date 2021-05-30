@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace MoviesApi.Core.Models.OMDb
 {
+    [Obsolete]
     public class Movie
     {
         public string Title { get; set; }

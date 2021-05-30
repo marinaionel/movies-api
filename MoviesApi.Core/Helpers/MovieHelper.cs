@@ -11,11 +11,5 @@
             id = id.Replace("tt", "");
             return int.TryParse(id, out idAsInt);
         }
-
-        public static string ConvertIdToString(int id)
-        {
-            string ftm = "0000000";
-            return "tt" + id.ToString(ftm);
-        }
     }
 }
