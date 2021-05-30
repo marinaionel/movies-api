@@ -21,7 +21,8 @@ namespace MoviesApi.Core.Models
         {
             get
             {
-                if (Birthday == null) return null;
+                if (Birthday == null)
+                    return null;
 
                 DateTime zeroTime = new(1, 1, 1);
 

@@ -26,7 +26,7 @@ namespace MoviesApi.Controllers
             _moviesContext = moviesContext;
         }
 
-        [HttpGet("GetReview")]
+        [HttpGet]
         public async Task<ActionResult<Review>> GetReview(string accountId, string movieId)
         {
             try
@@ -44,7 +44,7 @@ namespace MoviesApi.Controllers
             }
         }
 
-        [HttpPost("review")]
+        [HttpPost]
         public async Task<ActionResult> PostReview(Review review)
         {
             try
@@ -71,7 +71,7 @@ namespace MoviesApi.Controllers
             }
         }
 
-        [HttpDelete("review")]
+        [HttpDelete]
         public async Task<ActionResult> DeleteReview(string accountId, string movieId)
         {
             try

@@ -1,4 +1,5 @@
 ﻿using Flurl.Http;
+using Microsoft.Extensions.Configuration;
 using MoviesApi.Common;
 using MoviesApi.Core.Constants;
 using MoviesApi.Core.Models.OMDb;
@@ -9,13 +10,18 @@ namespace MoviesApi.ApiClient.OMDbApi
 {
     public class OMDBbClient
     {
-        private const string ApiLink = "http://www.omdbapi.com/?i={0}&apikey=8b151be9&plot=full";
+        private IConfiguration _configuration;
+        public OMDBbClient(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+        private const string ApiLink = "http://www.omdbapi.com/?i={0}&apikey={1}&plot=full";
 
         public async Task<Movie> GetMovie(string movieId)
         {
             try
             {
-                return await string.Format(ApiLink, movieId).GetJsonAsync<Movie>();
+                return await string.Format(ApiLink, _configuration["API-KEY-OMDB"], movieId).GetJsonAsync<Movie>();
             }
             catch (Exception ex)
             {
@@ -28,7 +34,7 @@ namespace MoviesApi.ApiClient.OMDbApi
         {
             try
             {
-                string poster = (await string.Format(ApiLink, movieId).GetJsonAsync<Movie>())?.Poster;
+                string poster = (await string.Format(ApiLink, _configuration["API-KEY-OMDB"], movieId).GetJsonAsync<Movie>())?.Poster;
                 return poster == Constants.Unknown ? null : poster;
             }
             catch (Exception ex)

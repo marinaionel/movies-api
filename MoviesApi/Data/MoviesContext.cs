@@ -6,6 +6,7 @@ namespace MoviesApi.Data
 {
     public class MoviesContext : DbContext
     {
+        private const int Timeout = 300;
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Person> People { get; set; }
         public DbSet<TotalRatings> TotalRatings { get; set; }
@@ -20,10 +21,12 @@ namespace MoviesApi.Data
 
         public MoviesContext()
         {
+            Database.SetCommandTimeout(Timeout);
         }
 
         public MoviesContext(DbContextOptions<MoviesContext> options) : base(options)
         {
+            Database.SetCommandTimeout(Timeout);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -335,7 +338,7 @@ namespace MoviesApi.Data
                             .HasConstraintName("country_movie_movies_id_fk")
                             .OnDelete(DeleteBehavior.ClientCascade));
 
-                entity.HasOne(m => m.Ratings)
+                entity.HasOne(m => m.TotalRatings)
                       .WithOne(r => r.Movie);
             });
 
@@ -355,7 +358,7 @@ namespace MoviesApi.Data
                       .HasColumnName("votes");
 
                 entity.HasOne(d => d.Movie)
-                      .WithOne(m => m.Ratings)
+                      .WithOne(m => m.TotalRatings)
                       .HasConstraintName("ratings_movies_id_fk");
             });
 

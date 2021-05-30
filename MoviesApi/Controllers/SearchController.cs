@@ -5,7 +5,6 @@ using MoviesApi.Common;
 using MoviesApi.Core.Enums;
 using MoviesApi.Data;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace MoviesApi.Controllers
@@ -22,7 +21,7 @@ namespace MoviesApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<HashSet<object>> Search(string q, EntityType type = EntityType.Movie, int max = 100, int offset = 0)
+        public ActionResult<IQueryable<object>> Search(string q, EntityType type = EntityType.Movie, int max = 100, int offset = 0)
         {
             try
             {
@@ -33,18 +32,18 @@ namespace MoviesApi.Controllers
 
                 return type switch
                 {
-                    EntityType.CrewMember => _moviesContext.People.Where(p => p.Name.ToLower().Contains(q))
+                    EntityType.CrewMember => new ActionResult<IQueryable<object>>(_moviesContext.People.Where(p => p.Name.ToLower().Contains(q))
                         .OrderBy(p => p.Id)
                         .Skip(offset)
                         .Take(max)
                         .Select(m => (object)m)
-                        .ToHashSet(),
-                    EntityType.Movie => _moviesContext.Movies.Where(m => m.Title.ToLower().Contains(q))
+                        .AsQueryable()),
+                    EntityType.Movie => new ActionResult<IQueryable<object>>(_moviesContext.Movies.Where(m => m.Title.ToLower().Contains(q))
                         .OrderBy(m => m.Id)
                         .Skip(offset)
                         .Take(max)
                         .Select(m => (object)m)
-                        .ToHashSet(),
+                        .AsQueryable()),
                     _ => null
                 };
             }

@@ -78,11 +78,13 @@ namespace MoviesApi
 
             services.AddSingleton<YoutubeAzureFunctionClient>();
             services.AddSingleton<QuantClient>();
-            services.AddSingleton<MovieFiller>();
-            services.AddSingleton<PersonFiller>();
             services.AddSingleton<TMDbApiClient>();
 
+            services.AddSingleton<MovieFiller>();
+            services.AddSingleton<PersonFiller>();
+
             services.AddHttpContextAccessor();
+
             IdentityModelEventSource.ShowPII = true;
         }
 

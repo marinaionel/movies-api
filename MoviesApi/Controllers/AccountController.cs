@@ -40,7 +40,7 @@ namespace MoviesApi.Controllers
                     return BadRequest();
 
                 if (_moviesContext.Accounts.Any(a => a.Id == UserId))
-                    return BadRequest("Already registered");
+                    return BadRequest("Account already registered");
 
                 account.Id = UserId;
 
@@ -66,7 +66,9 @@ namespace MoviesApi.Controllers
                 if (accountRequest == null)
                     return BadRequest();
 
-                Account existingAccount = await _moviesContext.Accounts.AsTracking().FirstOrDefaultAsync(a => a.Id == UserId);
+                Account existingAccount = await _moviesContext.Accounts.AsTracking()
+                    .FirstOrDefaultAsync(a => a.Id == UserId);
+
                 if (existingAccount == null)
                     return BadRequest("Account does not exist");
 
@@ -144,7 +146,9 @@ namespace MoviesApi.Controllers
                 if (movieIds == null || movieIds.Length == 0)
                     return BadRequest();
 
-                Account account = await _moviesContext.Accounts.Include(a => a.Watchlist).AsTracking().FirstOrDefaultAsync(a => a.Id == UserId);
+                Account account = await _moviesContext.Accounts.Include(a => a.Watchlist)
+                    .AsTracking()
+                    .FirstOrDefaultAsync(a => a.Id == UserId);
 
                 if (account == null)
                     return BadRequest("Account not found");
@@ -157,7 +161,7 @@ namespace MoviesApi.Controllers
                         account.Watchlist.Add(movie);
                 }
                 await _moviesContext.SaveChangesAsync();
-                return Ok();
+                return Accepted();
             }
             catch (Exception ex)
             {
@@ -167,7 +171,7 @@ namespace MoviesApi.Controllers
         }
 
         [HttpGet("watchlist")]
-        public ActionResult<HashSet<Movie>> GetWatchList(int max = 100, int offset = 0)
+        public ActionResult<HashSet<Movie>> GetWatchlist(int max = 100, int offset = 0)
         {
             try
             {
@@ -180,6 +184,7 @@ namespace MoviesApi.Controllers
                 HashSet<Movie> watchlist = _moviesContext.Accounts
                     .Where(a => a.Id == UserId)
                     .Include(a => a.Watchlist)
+                    .ThenInclude(a => a.TotalRatings)
                     .SelectMany(a => a.Watchlist)
                     .OrderBy(m => m.Id)
                     .Skip(offset)
@@ -209,7 +214,9 @@ namespace MoviesApi.Controllers
                 if (movieIds == null || movieIds.Length == 0)
                     return BadRequest();
 
-                Account account = await _moviesContext.Accounts.Include(a => a.Watchlist).AsTracking().FirstOrDefaultAsync(a => a.Id == UserId);
+                Account account = await _moviesContext.Accounts.Include(a => a.Watchlist)
+                    .AsTracking()
+                    .FirstOrDefaultAsync(a => a.Id == UserId);
 
                 if (account == null)
                     return BadRequest("Account not found");
@@ -245,7 +252,9 @@ namespace MoviesApi.Controllers
                 if (personIds == null || personIds.Length == 0)
                     return BadRequest();
 
-                Account account = await _moviesContext.Accounts.Include(a => a.FavouritePeople).AsTracking().FirstOrDefaultAsync(a => a.Id == UserId);
+                Account account = await _moviesContext.Accounts.Include(a => a.FavouritePeople)
+                    .AsTracking()
+                    .FirstOrDefaultAsync(a => a.Id == UserId);
 
                 if (account == null)
                     return BadRequest("Account not found");
@@ -257,7 +266,7 @@ namespace MoviesApi.Controllers
                         account.FavouritePeople.Add(person);
                 }
                 await _moviesContext.SaveChangesAsync();
-                return Ok();
+                return Accepted();
             }
             catch (Exception ex)
             {
@@ -280,7 +289,9 @@ namespace MoviesApi.Controllers
                 if (personIds == null || personIds.Length == 0)
                     return BadRequest();
 
-                Account account = await _moviesContext.Accounts.Include(a => a.FavouritePeople).AsTracking().FirstOrDefaultAsync(a => a.Id == UserId);
+                Account account = await _moviesContext.Accounts.Include(a => a.FavouritePeople)
+                    .AsTracking()
+                    .FirstOrDefaultAsync(a => a.Id == UserId);
 
                 if (account == null)
                     return BadRequest("Account not found");

@@ -34,7 +34,7 @@ namespace MoviesApi.Controllers
                                      .Include(c => c.Movies)
                                      .ThenInclude(c => c.Directors)
                                      .Include(c => c.Movies)
-                                     .ThenInclude(c => c.Ratings)
+                                     .ThenInclude(c => c.TotalRatings)
                                      .OrderBy(c => c.Id)
                                      .Skip(offset)
                                      .Take(max)
@@ -60,7 +60,7 @@ namespace MoviesApi.Controllers
                                                    .Include(c => c.Movies)
                                                    .ThenInclude(c => c.Directors)
                                                    .Include(c => c.Movies)
-                                                   .ThenInclude(m => m.Ratings)
+                                                   .ThenInclude(m => m.TotalRatings)
                                                    .AsNoTracking()
                                                    .FirstOrDefaultAsync();
 

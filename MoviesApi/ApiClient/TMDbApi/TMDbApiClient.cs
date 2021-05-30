@@ -1,15 +1,17 @@
-﻿using TMDbLib.Client;
+﻿using Microsoft.Extensions.Configuration;
+using TMDbLib.Client;
 
 namespace MoviesApi.ApiClient.TMDbApi
 {
     public class TMDbApiClient
     {
-        private const string ApiKey = "1dd138f66be96e0446edbd32265527ab";
-        public TMDbClient ApiClient { get; }
-
-        public TMDbApiClient()
+        public TMDbApiClient(IConfiguration configuration)
         {
-            ApiClient = new(ApiKey);
+            _configuration = configuration;
+            ApiClient = new(_configuration["API-KEY-TMDB"]);
         }
+
+        private IConfiguration _configuration;
+        public TMDbClient ApiClient { get; }
     }
 }

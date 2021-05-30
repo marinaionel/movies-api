@@ -33,6 +33,6 @@ namespace MoviesApi.Core.Models
         public ICollection<Chart> Charts { get; set; } = new HashSet<Chart>();
         public string Runtime { get; set; }
         public string Plot { get; set; }
-        public TotalRatings Ratings { get; set; }
+        public TotalRatings TotalRatings { get; set; }
     }
 }
