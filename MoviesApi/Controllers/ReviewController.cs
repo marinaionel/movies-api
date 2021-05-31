@@ -7,6 +7,7 @@ using MoviesApi.Core.Constants;
 using MoviesApi.Core.Helpers;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
+using MoviesApi.Requests;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,28 +46,35 @@ namespace MoviesApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> PostReview(Review review)
+        public async Task<ActionResult> PostReview(PostReviewRequest reviewRequest)
         {
             try
             {
-                if (review == null)
+                if (reviewRequest == null)
                     return BadRequest();
 
-                if (review.MovieId == 0)
+                if (!MovieHelper.ConvertIdToInt(reviewRequest.MovieId, out int movieIdAsInt))
                     return BadRequest();
 
                 if (UserId == null)
                     return BadRequest("User not authenticated");
 
-                review.AccountId = UserId;
+                Review review = new()
+                {
+                    AccountId = UserId,
+                    MovieId = movieIdAsInt,
+                    Rating = reviewRequest.Rating,
+                    Title = reviewRequest.Title,
+                    Text = reviewRequest.Text
+                };
 
                 _moviesContext.Reviews.Update(review);
                 await _moviesContext.SaveChangesAsync();
-                return Ok();
+                return Accepted();
             }
             catch (Exception ex)
             {
-                Log.Default.Error($"Error posting review {review}", ex);
+                Log.Default.Error($"Error posting review {reviewRequest}", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
