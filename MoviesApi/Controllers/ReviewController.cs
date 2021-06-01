@@ -94,7 +94,7 @@ namespace MoviesApi.Controllers
                 Review review = await _moviesContext.Reviews.FirstOrDefaultAsync(r => r.AccountId == UserId && r.MovieId == idAsInt);
 
                 if (review == null)
-                    return BadRequest("Review does not exist");
+                    return NotFound();
 
                 _moviesContext.Reviews.Remove(review);
                 await _moviesContext.SaveChangesAsync();
