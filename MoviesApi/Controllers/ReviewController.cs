@@ -68,7 +68,7 @@ namespace MoviesApi.Controllers
                     Text = reviewRequest.Text
                 };
 
-                if (await GetReview(UserId, reviewRequest.MovieId) == null)
+                if (!_moviesContext.Reviews.Any(r => r.MovieId == movieIdAsInt && r.AccountId == UserId))
                     _moviesContext.Reviews.AddAsync(review);
                 else
                     _moviesContext.Reviews.Update(review);
