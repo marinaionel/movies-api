@@ -48,6 +48,7 @@ namespace MoviesApi.Controllers
                                                      .Include(m => m.Reviews)
                                                      .ThenInclude(m => m.Account)
                                                      .Include(m => m.Watchers)
+                                                     .Include(m => m.TotalRatings)
                                                      .AsNoTracking()
                                                      .FirstOrDefaultAsync();
                 if (movie == null)
@@ -60,7 +61,6 @@ namespace MoviesApi.Controllers
                     });
 
                 await _movieFiller.FillMovie(movie, _moviesContext);
-                movie.TotalRatings = await _moviesContext.TotalRatings.Where(r => r.MovieId == movie.Id).FirstOrDefaultAsync();
                 movie.IsInMyWatchlist = movie.Watchers.Any(w => w.Id == UserId);
                 return movie;
             }
@@ -81,16 +81,13 @@ namespace MoviesApi.Controllers
                                                            .Include(m => m.Languages)
                                                            .Include(m => m.Genres)
                                                            .Include(m => m.Watchers)
+                                                           .Include(m => m.TotalRatings)
                                                            .OrderBy(m => m.Id)
                                                            .Skip(offset)
                                                            .Take(max)
                                                            .AsNoTracking()
                                                            .ToListAsync();
-                movies.ForEach(m =>
-                {
-                    m.TotalRatings = _moviesContext.TotalRatings.FirstOrDefault(r => r.MovieId == m.Id);
-                    m.IsInMyWatchlist = m.Watchers.Any(mm => mm.Id == UserId);
-                });
+                movies.ForEach(m => m.IsInMyWatchlist = m.Watchers.Any(mm => mm.Id == UserId));
                 return movies;
             }
             catch (Exception ex)

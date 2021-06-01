@@ -39,7 +39,10 @@ namespace MoviesApi.Controllers
                                            .Where(p => p.Id == id)
                                            .Include(p => p.ActedInMovies)
                                            .ThenInclude(m => m.Genres)
+                                           .Include(p => p.ActedInMovies)
+                                           .ThenInclude(p => p.TotalRatings)
                                            .Include(p => p.DirectedMovies)
+                                           .ThenInclude(p => p.TotalRatings)
                                            .Include(p => p.Fans)
                                            .AsNoTracking()
                                            .FirstOrDefaultAsync();
@@ -47,8 +50,6 @@ namespace MoviesApi.Controllers
                     return NotFound();
                 await _personFiller.FillPerson(person, _moviesContext);
                 person.IsMyFavourite = person.Fans.Any(p => p.Id == UserId);
-                person.ActedInMovies.ForEach(m => m.TotalRatings = _moviesContext.TotalRatings.FirstOrDefault(r => r.MovieId == m.Id));
-                person.DirectedMovies.ForEach(m => m.TotalRatings = _moviesContext.TotalRatings.FirstOrDefault(r => r.MovieId == m.Id));
                 return person;
             }
             catch (Exception ex)

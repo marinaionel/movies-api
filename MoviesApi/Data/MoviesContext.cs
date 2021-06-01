@@ -339,7 +339,8 @@ namespace MoviesApi.Data
                             .OnDelete(DeleteBehavior.ClientCascade));
 
                 entity.HasOne(m => m.TotalRatings)
-                      .WithOne(r => r.Movie);
+                      .WithOne(r => r.Movie)
+                      .HasForeignKey<TotalRatings>(r => r.MovieId);
             });
 
             modelBuilder.Entity<TotalRatings>(entity =>
