@@ -7,6 +7,7 @@ using MoviesApi.Core.Constants;
 using MoviesApi.Core.Helpers;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
+using MoviesApi.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace MoviesApi.Controllers
     public class AccountController : ControllerBase
     {
         private string UserId => HttpContext.User.Claims.ToList().FirstOrDefault(x => x.Type == Constants.UserId)?.Value;
+        private string Domain => $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
         private MoviesContext _moviesContext;
 
         public AccountController(MoviesContext moviesContext)
@@ -29,24 +31,30 @@ namespace MoviesApi.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult> Register([FromBody] Account account)
+        public async Task<ActionResult> Register([FromBody] AccountRequest accountRequest)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(UserId))
                     return Unauthorized();
 
-                if (account == null)
+                if (accountRequest == null)
                     return BadRequest();
 
                 if (_moviesContext.Accounts.Any(a => a.Id == UserId))
                     return BadRequest("Account already registered");
 
-                account.Id = UserId;
+                Account account = new()
+                {
+                    Id = UserId,
+                    Birthday = accountRequest.Birthday,
+                    Email = accountRequest.Email,
+                    Name = accountRequest.Name
+                };
 
                 await _moviesContext.Accounts.AddAsync(account);
                 await _moviesContext.SaveChangesAsync();
-                return Ok();
+                return Created($"{Domain}/api/Account", account);
             }
             catch (Exception ex)
             {
@@ -56,7 +64,7 @@ namespace MoviesApi.Controllers
         }
 
         [HttpPost("update")]
-        public async Task<ActionResult> UpdateProfile([FromBody] Account accountRequest)
+        public async Task<ActionResult> UpdateProfile([FromBody] AccountRequest accountRequest)
         {
             try
             {
@@ -78,7 +86,7 @@ namespace MoviesApi.Controllers
 
                 _moviesContext.Accounts.Update(existingAccount);
                 await _moviesContext.SaveChangesAsync();
-                return Ok();
+                return Accepted();
             }
             catch (Exception ex)
             {

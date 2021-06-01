@@ -20,7 +20,7 @@ namespace MoviesApi.Controllers
     public class ReviewController : ControllerBase
     {
         private string UserId => HttpContext.User.Claims.ToList().FirstOrDefault(x => x.Type == Constants.UserId)?.Value;
-
+        private string Domain => $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
         private MoviesContext _moviesContext;
         public ReviewController(MoviesContext moviesContext)
         {
@@ -70,7 +70,7 @@ namespace MoviesApi.Controllers
 
                 _moviesContext.Reviews.Update(review);
                 await _moviesContext.SaveChangesAsync();
-                return Accepted();
+                return Created($"{Domain}/api/Review?accountId={UserId}&movieId={movieIdAsInt}", review);
             }
             catch (Exception ex)
             {
