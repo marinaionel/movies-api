@@ -20,7 +20,7 @@ namespace MoviesApi.ApiClient.AzureFunctions
         {
             try
             {
-                return await string.Format(_configuration["GET-TRAILER-API-CODE"], ApiLink, search).GetStringAsync();
+                return await string.Format(ApiLink, _configuration["GET-TRAILER-API-CODE"], search).GetStringAsync();
             }
             catch (Exception ex)
             {
