@@ -80,20 +80,17 @@ namespace MoviesApi.Controllers
         }
 
         [HttpDelete]
-        public async Task<ActionResult> DeleteReview(string accountId, string movieId)
+        public async Task<ActionResult> DeleteReview(string movieId)
         {
             try
             {
                 if (MovieHelper.ConvertIdToInt(movieId, out int idAsInt))
                     return BadRequest();
 
-                Review review = await _moviesContext.Reviews.FirstOrDefaultAsync(r => r.AccountId == accountId && r.MovieId == idAsInt);
+                Review review = await _moviesContext.Reviews.FirstOrDefaultAsync(r => r.AccountId == UserId && r.MovieId == idAsInt);
 
                 if (review == null)
                     return BadRequest("Review does not exist");
-
-                if (review.AccountId != UserId)
-                    return Unauthorized();
 
                 _moviesContext.Reviews.Remove(review);
                 await _moviesContext.SaveChangesAsync();
@@ -101,7 +98,7 @@ namespace MoviesApi.Controllers
             }
             catch (Exception ex)
             {
-                Log.Default.Error($"Error deleting review for movie {movieId} by user {accountId}", ex);
+                Log.Default.Error($"Error deleting review for movie {movieId} by user {UserId}", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
