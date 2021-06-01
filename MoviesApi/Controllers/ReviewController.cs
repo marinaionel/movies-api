@@ -88,7 +88,7 @@ namespace MoviesApi.Controllers
         {
             try
             {
-                if (MovieHelper.ConvertIdToInt(movieId, out int idAsInt))
+                if (!MovieHelper.ConvertIdToInt(movieId, out int idAsInt))
                     return BadRequest();
 
                 Review review = await _moviesContext.Reviews.FirstOrDefaultAsync(r => r.AccountId == UserId && r.MovieId == idAsInt);
