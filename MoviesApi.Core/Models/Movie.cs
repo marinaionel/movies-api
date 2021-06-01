@@ -12,7 +12,7 @@ namespace MoviesApi.Core.Models
         [JsonIgnore]
         public int Id { get; set; }
         public string Title { get; set; }
-        public long? Year { get; set; }
+        public int? Year { get; set; }
         [NotMapped]
         public string IdString => "tt" + Id.ToString("0000000");
 
