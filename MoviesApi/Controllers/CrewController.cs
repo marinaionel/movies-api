@@ -47,6 +47,8 @@ namespace MoviesApi.Controllers
                     return NotFound();
                 await _personFiller.FillPerson(person, _moviesContext);
                 person.IsMyFavourite = person.Fans.Any(p => p.Id == UserId);
+                person.ActedInMovies.ForEach(m => m.TotalRatings = _moviesContext.TotalRatings.FirstOrDefault(r => r.MovieId == m.Id));
+                person.DirectedMovies.ForEach(m => m.TotalRatings = _moviesContext.TotalRatings.FirstOrDefault(r => r.MovieId == m.Id));
                 return person;
             }
             catch (Exception ex)
