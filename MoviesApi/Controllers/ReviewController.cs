@@ -69,7 +69,7 @@ namespace MoviesApi.Controllers
                 };
 
                 if (!_moviesContext.Reviews.Any(r => r.MovieId == movieIdAsInt && r.AccountId == UserId))
-                    _moviesContext.Reviews.AddAsync(review);
+                    await _moviesContext.Reviews.AddAsync(review);
                 else
                     _moviesContext.Reviews.Update(review);
 
