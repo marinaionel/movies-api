@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesApi.Common;
+using MoviesApi.Core.Constants;
 using MoviesApi.Core.Extensions;
 using MoviesApi.Core.Helpers;
 using MoviesApi.Core.Models;
@@ -20,6 +21,7 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
+        private string UserId => HttpContext.User.Claims.ToList().FirstOrDefault(x => x.Type == Constants.UserId)?.Value;
         private MoviesContext _moviesContext;
         private MovieFiller _movieFiller;
 
@@ -32,15 +34,12 @@ namespace MoviesApi.Controllers
         [HttpGet("{movieId}")]
         public async Task<ActionResult<Movie>> GetMovieAsync(string movieId)
         {
-            if (string.IsNullOrWhiteSpace(movieId))
-                return BadRequest();
-
             try
             {
                 if (!MovieHelper.ConvertIdToInt(movieId, out int idAsInt))
                     return BadRequest();
 
-                Movie m = await _moviesContext.Movies.Where(m => m.Id == idAsInt)
+                Movie movie = await _moviesContext.Movies.Where(m => m.Id == idAsInt)
                                                      .Include(m => m.Directors)
                                                      .Include(m => m.Actors)
                                                      .Include(m => m.Genres)
@@ -48,19 +47,22 @@ namespace MoviesApi.Controllers
                                                      .Include(m => m.Countries)
                                                      .Include(m => m.Reviews)
                                                      .ThenInclude(m => m.Account)
+                                                     .Include(m => m.Watchers)
                                                      .AsNoTracking()
                                                      .FirstOrDefaultAsync();
-                if (m == null) return NotFound();
+                if (movie == null)
+                    return NotFound();
 
-                m.Reviews.Where(r => r?.Account != null).ForEach(r =>
+                movie.Reviews.Where(r => r?.Account != null).ForEach(r =>
                     {
                         r.Account.Birthday = null;
                         r.Account.Email = null;
                     });
 
-                await _movieFiller.FillMovie(m, _moviesContext);
-                m.TotalRatings = await _moviesContext.TotalRatings.Where(r => r.MovieId == m.Id).FirstOrDefaultAsync();
-                return m;
+                await _movieFiller.FillMovie(movie, _moviesContext);
+                movie.TotalRatings = await _moviesContext.TotalRatings.Where(r => r.MovieId == movie.Id).FirstOrDefaultAsync();
+                movie.IsInMyWatchlist = movie.Watchers.Any(w => w.Id == UserId);
+                return movie;
             }
             catch (Exception ex)
             {
@@ -78,12 +80,17 @@ namespace MoviesApi.Controllers
                                                            .Include(m => m.Actors)
                                                            .Include(m => m.Languages)
                                                            .Include(m => m.Genres)
+                                                           .Include(m => m.Watchers)
                                                            .OrderBy(m => m.Id)
                                                            .Skip(offset)
                                                            .Take(max)
                                                            .AsNoTracking()
                                                            .ToListAsync();
-                movies.ForEach(m => m.TotalRatings = _moviesContext.TotalRatings.FirstOrDefault(r => r.MovieId == m.Id));
+                movies.ForEach(m =>
+                {
+                    m.TotalRatings = _moviesContext.TotalRatings.FirstOrDefault(r => r.MovieId == m.Id);
+                    m.IsInMyWatchlist = m.Watchers.Any(mm => mm.Id == UserId);
+                });
                 return movies;
             }
             catch (Exception ex)

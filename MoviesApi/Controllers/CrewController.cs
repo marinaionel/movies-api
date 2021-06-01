@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesApi.Common;
+using MoviesApi.Core.Constants;
+using MoviesApi.Core.Extensions;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
 using MoviesApi.DataFillers;
@@ -20,6 +22,7 @@ namespace MoviesApi.Controllers
     {
         private MoviesContext _moviesContext;
         private PersonFiller _personFiller;
+        private string UserId => HttpContext.User.Claims.ToList().FirstOrDefault(x => x.Type == Constants.UserId)?.Value;
 
         public CrewController(MoviesContext moviesContext, PersonFiller personFiller)
         {
@@ -27,7 +30,7 @@ namespace MoviesApi.Controllers
             _personFiller = personFiller;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<Person>> GetCrewMemberAsync(int id)
         {
             try
@@ -37,11 +40,13 @@ namespace MoviesApi.Controllers
                                            .Include(p => p.ActedInMovies)
                                            .ThenInclude(m => m.Genres)
                                            .Include(p => p.DirectedMovies)
+                                           .Include(p => p.Fans)
                                            .AsNoTracking()
                                            .FirstOrDefaultAsync();
-
-                if (person == null) return NotFound();
+                if (person == null)
+                    return NotFound();
                 await _personFiller.FillPerson(person, _moviesContext);
+                person.IsMyFavourite = person.Fans.Any(p => p.Id == UserId);
                 return person;
             }
             catch (Exception ex)
@@ -52,7 +57,7 @@ namespace MoviesApi.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<ActionResult<ICollection<Person>>> GetCrewMembersAsync(int max = 100, int offset = 0)
+        public ActionResult<ICollection<Person>> GetCrewMembersAsync(int max = 100, int offset = 0)
         {
             try
             {
@@ -60,11 +65,13 @@ namespace MoviesApi.Controllers
                                                        .Include(p => p.ActedInMovies)
                                                        .ThenInclude(m => m.Genres)
                                                        .Include(p => p.DirectedMovies)
+                                                       .Include(p => p.Fans)
                                                        .OrderBy(p => p.Id)
                                                        .Skip(offset)
                                                        .Take(max)
                                                        .AsNoTracking()
                                                        .ToHashSet();
+                people.ForEach(p => p.IsMyFavourite = p.Fans.Any(pp => pp.Id == UserId));
                 return people;
             }
             catch (Exception ex)

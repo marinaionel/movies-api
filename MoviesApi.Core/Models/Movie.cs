@@ -15,7 +15,6 @@ namespace MoviesApi.Core.Models
         public int? Year { get; set; }
         [NotMapped]
         public string IdString => "tt" + Id.ToString("0000000");
-
         public string BoxOffice { get; set; }
         public DateTime? ReleaseDate { get; set; }
         public string PosterUrl { get; set; }
@@ -33,5 +32,7 @@ namespace MoviesApi.Core.Models
         public string Runtime { get; set; }
         public string Plot { get; set; }
         public TotalRatings TotalRatings { get; set; }
+        [NotMapped]
+        public bool? IsInMyWatchlist { get; set; } = null;
     }
 }

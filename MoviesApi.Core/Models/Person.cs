@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
@@ -16,5 +17,7 @@ namespace MoviesApi.Core.Models
         public ICollection<Movie> ActedInMovies { get; set; } = new HashSet<Movie>();
         [JsonIgnore]
         public ICollection<Account> Fans { get; set; } = new HashSet<Account>();
+        [NotMapped]
+        public bool? IsMyFavourite { get; set; } = null;
     }
 }

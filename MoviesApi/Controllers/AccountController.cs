@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesApi.Common;
 using MoviesApi.Core.Constants;
+using MoviesApi.Core.Extensions;
 using MoviesApi.Core.Helpers;
 using MoviesApi.Core.Models;
 using MoviesApi.Data;
@@ -199,6 +200,8 @@ namespace MoviesApi.Controllers
                     .Take(max)
                     .ToHashSet();
 
+                watchlist.ForEach(m => m.IsInMyWatchlist = true);
+
                 return watchlist;
             }
             catch (Exception ex)
@@ -209,7 +212,7 @@ namespace MoviesApi.Controllers
         }
 
         [HttpDelete("RemoveFromWatchList")]
-        public async Task<ActionResult> RemoveFromWatchList(string[] movieIds)
+        public async Task<ActionResult> RemoveFromWatchlist(string[] movieIds)
         {
             try
             {
