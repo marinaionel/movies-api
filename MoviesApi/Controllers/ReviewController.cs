@@ -68,7 +68,11 @@ namespace MoviesApi.Controllers
                     Text = reviewRequest.Text
                 };
 
-                _moviesContext.Reviews.Update(review);
+                if (await GetReview(UserId, reviewRequest.MovieId) == null)
+                    _moviesContext.Reviews.AddAsync(review);
+                else
+                    _moviesContext.Reviews.Update(review);
+
                 await _moviesContext.SaveChangesAsync();
                 return Created($"{Domain}/api/Review?accountId={UserId}&movieId={movieIdAsInt}", review);
             }
