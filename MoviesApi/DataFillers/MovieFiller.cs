@@ -37,7 +37,7 @@ namespace MoviesApi.DataFillers
             TMDbLib.Objects.Movies.Movie tmdbMovie = await _tmDbApiClient.ApiClient.GetMovieAsync(fullMovie.IdString);
             if (tmdbMovie == null) return;
 
-            if (fullMovie.PosterUrl is null or Constants.Unknown)
+            if (fullMovie.PosterUrl is null or Constants.Unknown && tmdbMovie.PosterPath != null)
                 trackedMovie.PosterUrl = $"https://image.tmdb.org/t/p/w500{tmdbMovie.PosterPath}";
 
             trackedMovie.ReleaseDate ??= tmdbMovie.ReleaseDate;
