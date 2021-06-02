@@ -7,4 +7,4 @@ https://docs.microsoft.com/en-us/visualstudio/get-started/tutorial-open-project-
 https://docs.microsoft.com/en-us/visualstudio/get-started/csharp/run-program?view=vs-2019
 
 ### Postman collection
-[https://documenter.getpostman.com/view/8996854/TzY3Av86](Postman Collection)
+[Postman Collection](https://documenter.getpostman.com/view/8996854/TzY3Av86)
