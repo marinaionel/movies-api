@@ -64,7 +64,7 @@ namespace MoviesApi.Controllers
             }
         }
 
-        [HttpPost("update")]
+        [HttpPut("update")]
         public async Task<ActionResult> UpdateProfile([FromBody] AccountRequest accountRequest)
         {
             try
