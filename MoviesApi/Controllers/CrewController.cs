@@ -36,18 +36,19 @@ namespace MoviesApi.Controllers
             try
             {
                 Person person = await _moviesContext.People
-                                           .Where(p => p.Id == id)
-                                           .Include(p => p.ActedInMovies)
-                                           .ThenInclude(m => m.Genres)
-                                           .Include(p => p.ActedInMovies)
-                                           .ThenInclude(p => p.TotalRatings)
-                                           .Include(p => p.DirectedMovies)
-                                           .ThenInclude(p => p.TotalRatings)
-                                           .Include(p => p.Fans)
-                                           .AsNoTracking()
-                                           .FirstOrDefaultAsync();
+                                                    .Where(p => p.Id == id)
+                                                    .Include(p => p.ActedInMovies)
+                                                    .ThenInclude(m => m.Genres)
+                                                    .Include(p => p.ActedInMovies)
+                                                    .ThenInclude(p => p.TotalRatings)
+                                                    .Include(p => p.DirectedMovies)
+                                                    .ThenInclude(p => p.TotalRatings)
+                                                    .Include(p => p.Fans)
+                                                    .AsNoTracking()
+                                                    .FirstOrDefaultAsync();
                 if (person == null)
                     return NotFound();
+
                 await _personFiller.FillPerson(person, _moviesContext);
                 person.IsMyFavourite = person.Fans.Any(p => p.Id == UserId);
                 return person;

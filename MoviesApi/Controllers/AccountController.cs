@@ -142,7 +142,7 @@ namespace MoviesApi.Controllers
         }
 
         [HttpPost("AddToWatchList")]
-        public async Task<ActionResult> AddToWatchList(string[] movieIds)
+        public async Task<ActionResult> AddToWatchlist(string[] movieIds)
         {
             try
             {
@@ -180,7 +180,7 @@ namespace MoviesApi.Controllers
         }
 
         [HttpGet("watchlist")]
-        public ActionResult<HashSet<Movie>> GetWatchlist(int max = 100, int offset = 0)
+        public ActionResult<ICollection<Movie>> GetWatchlist(int max = 100, int offset = 0)
         {
             try
             {

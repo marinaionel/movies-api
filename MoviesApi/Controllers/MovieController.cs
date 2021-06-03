@@ -72,11 +72,11 @@ namespace MoviesApi.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<ActionResult<List<Movie>>> GetMoviesAsync(int max, int offset)
+        public ActionResult<ICollection<Movie>> GetMoviesAsync(int max, int offset)
         {
             try
             {
-                List<Movie> movies = await _moviesContext.Movies.Include(m => m.Directors)
+                HashSet<Movie> movies = _moviesContext.Movies.Include(m => m.Directors)
                                                            .Include(m => m.Actors)
                                                            .Include(m => m.Languages)
                                                            .Include(m => m.Genres)
@@ -86,13 +86,45 @@ namespace MoviesApi.Controllers
                                                            .Skip(offset)
                                                            .Take(max)
                                                            .AsNoTracking()
-                                                           .ToListAsync();
+                                                           .ToHashSet();
                 movies.ForEach(m => m.IsInMyWatchlist = m.Watchers.Any(mm => mm.Id == UserId));
                 return movies;
             }
             catch (Exception ex)
             {
                 Log.Default.Error("Error getting movies", ex);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpGet("{movieId}/reviews")]
+        public ActionResult<ICollection<Review>> GetMovieReviews(string movieId, int max = 10, int offset = 0)
+        {
+            try
+            {
+                if (!MovieHelper.ConvertIdToInt(movieId, out int idAsInt))
+                    return BadRequest();
+
+                HashSet<Review> reviews = _moviesContext.Reviews.Where(r => r.MovieId == idAsInt)
+                    .Include(r => r.Movie)
+                    .Include(r => r.Account)
+                    .OrderBy(r => r.Rating)
+                    .ThenBy(r => r.AccountId)
+                    .Skip(offset)
+                    .Take(max)
+                    .ToHashSet();
+
+                reviews.Where(r => r?.Account != null).ForEach(r =>
+                {
+                    r.Account.Birthday = null;
+                    r.Account.Email = null;
+                });
+
+                return reviews;
+            }
+            catch (Exception ex)
+            {
+                Log.Default.Error("Error getting reviews for movie", ex);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
