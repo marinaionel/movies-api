@@ -23,7 +23,7 @@ namespace MoviesApi.Core.Logging
         public void Info(string text) => _logger.Info(text);
         public void Debug(string text) => _logger.Debug(text);
         public void Warn(string text) => _logger.Warn(text);
-        public void Trace(string text) => _logger.Logger.Log(MethodBase.GetCurrentMethod().DeclaringType, Level.Trace, text, null);
+        public void Trace(string text) => _logger.Logger.Log(MethodBase.GetCurrentMethod()?.DeclaringType, Level.Trace, text, null);
 
         public void Error(string text, Exception exception = null)
         {
