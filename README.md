@@ -9,3 +9,6 @@ https://docs.microsoft.com/en-us/visualstudio/get-started/csharp/run-program?vie
 
 ### Postman collection
 See the [Postman Collection](https://documenter.getpostman.com/view/8996854/TzY3Av86) describing the routes.
+
+## System architecture
+![Copy of architecture diagram](https://user-images.githubusercontent.com/19744901/144084763-9f9ab386-7003-4f5d-819e-c2d1812d4a2b.png)
